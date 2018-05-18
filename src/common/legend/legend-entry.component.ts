@@ -13,6 +13,7 @@ import {
     <span 
       [title]="formattedLabel"
       tabindex="-1"
+      class="legend-label-box"
       [class.active]="isActive"
       (click)="select.emit(formattedLabel)">
       <span
