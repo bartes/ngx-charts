@@ -57,7 +57,7 @@ export class NumberCardComponent extends BaseChartComponent {
   colors: ColorHelper;
   transform: string;
   domain: any[];
-  margin = [10, 10, 10, 10];
+  @Input() margin = [10, 10, 10, 10];
 
   backgroundCards: any[];
 

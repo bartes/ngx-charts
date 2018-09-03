@@ -87,7 +87,7 @@ export class PieChartComponent extends BaseChartComponent {
   colors: ColorHelper;
   domain: any;
   dims: any;
-  margin = [20, 20, 20, 20];
+  @Input() margin = [20, 20, 20, 20];
   legendOptions: any;
 
   update(): void {
