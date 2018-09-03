@@ -101,6 +101,10 @@ var TreeMapComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", TemplateRef)
     ], TreeMapComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], TreeMapComponent.prototype, "margin", void 0);
     TreeMapComponent = __decorate([
         Component({
             selector: 'ngx-charts-tree-map',

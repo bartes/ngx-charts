@@ -97,6 +97,10 @@ var NumberCardComponent = /** @class */ (function (_super) {
         Input(),
         __metadata("design:type", Number)
     ], NumberCardComponent.prototype, "designatedTotal", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], NumberCardComponent.prototype, "margin", void 0);
     NumberCardComponent = __decorate([
         Component({
             selector: 'ngx-charts-number-card',
