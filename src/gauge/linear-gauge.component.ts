@@ -114,7 +114,7 @@ export class LinearGaugeComponent extends BaseChartComponent implements AfterVie
 
   colors: ColorHelper;
   transform: string;
-  margin: any[] = [10, 20, 10, 20];
+  @Input() margin: any[] = [10, 20, 10, 20];
   transformLine: string;
 
   valueResizeScale: number = 1;

@@ -145,7 +145,7 @@ export class BarVertical2DComponent extends BaseChartComponent {
   valueScale: any;
   transform: string;
   colors: ColorHelper;
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   legendOptions: any;

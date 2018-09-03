@@ -171,7 +171,7 @@ export class PolarChartComponent extends BaseChartComponent {
   transformYAxis: string;
   transformXAxis: string;
   series: any; // ???
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   filteredDomain: any;
