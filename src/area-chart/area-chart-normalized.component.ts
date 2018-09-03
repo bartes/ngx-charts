@@ -184,7 +184,7 @@ export class AreaChartNormalizedComponent extends BaseChartComponent {
   clipPathId: string;
   clipPath: string;
   colors: ColorHelper;
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   tooltipAreas: any[];
   hoveredVertical: any; // the value of the x axis that is hovered over
   xAxisHeight: number = 0;

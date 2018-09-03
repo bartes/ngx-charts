@@ -146,7 +146,7 @@ export class BubbleChartComponent extends BaseChartComponent {
   dims: ViewDimensions;
   colors: ColorHelper;
   scaleType = 'linear';
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   bubblePadding = [0, 0, 0, 0];
   data: any;
 

@@ -116,7 +116,7 @@ export class BarVerticalComponent extends BaseChartComponent {
   yDomain: any;
   transform: string;
   colors: ColorHelper;
-  margin: any[] = [10, 20, 10, 20];
+  @Input() margin: any[] = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   legendOptions: any;
@@ -124,11 +124,11 @@ export class BarVerticalComponent extends BaseChartComponent {
 
   update(): void {
     super.update();
-   
+
     if (!this.showDataLabel) {
-      this.dataLabelMaxHeight = {negative: 0, positive: 0};          
+      this.dataLabelMaxHeight = {negative: 0, positive: 0};
     }
-    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20]; 
+    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20];
 
     this.dims = calculateViewDimensions({
       width: this.width,

@@ -213,7 +213,7 @@ export class LineChartComponent extends BaseChartComponent {
   clipPathId: string;
   series: any;
   areaPath: any;
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   hoveredVertical: any; // the value of the x axis that is hovered over
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
