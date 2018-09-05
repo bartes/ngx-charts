@@ -44,7 +44,9 @@ import { TooltipService } from '../tooltip';
         [height]="view[1]"
         [width]="legendWidth"
         [activeEntries]="activeEntries"
+        [hiddenEntries]="hiddenEntries"
         (labelClick)="legendLabelClick.emit($event)"
+        (labelToggle)="legendLabelToggle.emit($event)"
         (labelActivate)="legendLabelActivate.emit($event)"
         (labelDeactivate)="legendLabelDeactivate.emit($event)">
       </ngx-charts-legend>
@@ -72,9 +74,11 @@ export class ChartComponent implements OnChanges {
   @Input() legendType: any;
   @Input() colors: any;
   @Input() activeEntries: any[];
+  @Input() hiddenEntries: any[];
   @Input() animations: boolean = true;
 
   @Output() legendLabelClick: EventEmitter<any> = new EventEmitter();
+  @Output() legendLabelToggle: EventEmitter<any> = new EventEmitter();
   @Output() legendLabelActivate: EventEmitter<any> = new EventEmitter();
   @Output() legendLabelDeactivate: EventEmitter<any> = new EventEmitter();
 
