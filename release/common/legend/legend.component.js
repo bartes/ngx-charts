@@ -9,10 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Component, Input, ChangeDetectionStrategy, Output, EventEmitter, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { formatLabel } from '../label.helper';
+import { isRelatedEntry } from '../domain.helper';
 var LegendComponent = /** @class */ (function () {
     function LegendComponent(cd) {
         this.cd = cd;
+        this.horizontal = false;
         this.labelClick = new EventEmitter();
+        this.labelToggle = new EventEmitter();
         this.labelActivate = new EventEmitter();
         this.labelDeactivate = new EventEmitter();
         this.legendEntries = [];
@@ -47,12 +50,10 @@ var LegendComponent = /** @class */ (function () {
         return items;
     };
     LegendComponent.prototype.isActive = function (entry) {
-        if (!this.activeEntries)
-            return false;
-        var item = this.activeEntries.find(function (d) {
-            return entry.label === d.name;
-        });
-        return item !== undefined;
+        return isRelatedEntry(this.activeEntries, entry.label);
+    };
+    LegendComponent.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.label);
     };
     LegendComponent.prototype.activate = function (item) {
         this.labelActivate.emit(item);
@@ -88,9 +89,21 @@ var LegendComponent = /** @class */ (function () {
         __metadata("design:type", Object)
     ], LegendComponent.prototype, "activeEntries", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LegendComponent.prototype, "horizontal", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LegendComponent.prototype, "hiddenEntries", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", EventEmitter)
     ], LegendComponent.prototype, "labelClick", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], LegendComponent.prototype, "labelToggle", void 0);
     __decorate([
         Output(),
         __metadata("design:type", EventEmitter)
@@ -102,7 +115,7 @@ var LegendComponent = /** @class */ (function () {
     LegendComponent = __decorate([
         Component({
             selector: 'ngx-charts-legend',
-            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\">\n        <ul class=\"legend-labels\"\n          [style.max-height.px]=\"height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
+            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\" [class.horizontal-legend]=\"horizontal\">\n        <ul class=\"legend-labels\"\n          [style.max-height.px]=\"horizontal ? 25 : height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              [isHidden]=\"isHidden(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (toggle)=\"labelToggle.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
             styleUrls: ['./legend.component.css'],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush

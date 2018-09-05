@@ -4,6 +4,7 @@ export declare class LegendEntryComponent {
     label: any;
     formattedLabel: string;
     isActive: boolean;
+    isHidden: boolean;
     select: EventEmitter<any>;
     activate: EventEmitter<any>;
     deactivate: EventEmitter<any>;
@@ -11,4 +12,5 @@ export declare class LegendEntryComponent {
     readonly trimmedLabel: string;
     onMouseEnter(): void;
     onMouseLeave(): void;
+    onClick($event: any): void;
 }

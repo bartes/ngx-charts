@@ -5,6 +5,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
 export declare class LineChartComponent extends BaseChartComponent {
     legend: any;
     legendTitle: string;
+    legendPosition: string;
     xAxis: any;
     yAxis: any;
     showXAxisLabel: any;
@@ -17,6 +18,8 @@ export declare class LineChartComponent extends BaseChartComponent {
     showGridLines: boolean;
     curve: any;
     activeEntries: any[];
+    enableSeriesHidding: boolean;
+    hiddenEntries: any[];
     schemeType: string;
     rangeFillOpacity: number;
     xAxisTickFormatting: any;
@@ -32,14 +35,19 @@ export declare class LineChartComponent extends BaseChartComponent {
     xScaleMax: any;
     yScaleMin: number;
     yScaleMax: number;
+    syncedHoveredVertical: any;
     activate: EventEmitter<any>;
     deactivate: EventEmitter<any>;
+    showSeries: EventEmitter<any>;
+    hideSeries: EventEmitter<any>;
+    hoveredVerticalDone: EventEmitter<any>;
     tooltipTemplate: TemplateRef<any>;
     seriesTooltipTemplate: TemplateRef<any>;
     dims: ViewDimensions;
     xSet: any;
     xDomain: any;
     yDomain: any;
+    yDomainAll: any;
     seriesDomain: any;
     yScale: any;
     xScale: any;
@@ -64,10 +72,11 @@ export declare class LineChartComponent extends BaseChartComponent {
     timelineXDomain: any;
     timelineTransform: any;
     timelinePadding: number;
+    isHidden(entry: any): boolean;
     update(): void;
     updateTimeline(): void;
     getXDomain(): any[];
-    getYDomain(): any[];
+    getYDomain(excludeHidden?: boolean): any[];
     getSeriesDomain(): any[];
     getXScale(domain: any, width: any): any;
     getYScale(domain: any, height: any): any;
@@ -76,7 +85,10 @@ export declare class LineChartComponent extends BaseChartComponent {
     updateDomain(domain: any): void;
     updateHoveredVertical(item: any): void;
     hideCircles(): void;
-    onClick(data: any, series?: any): void;
+    onLegendClick(data: any): void;
+    onLegendToggle(data: any): void;
+    toggleHidden(item: any): void;
+    onSeriesClick(data: any, series?: any): void;
     trackBy(index: any, item: any): string;
     setColors(): void;
     getLegendOptions(): {
@@ -84,6 +96,7 @@ export declare class LineChartComponent extends BaseChartComponent {
         colors: any;
         domain: any[];
         title: any;
+        position: string;
     };
     updateYAxisWidth({width}: {
         width: any;
