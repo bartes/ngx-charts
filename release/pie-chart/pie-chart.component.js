@@ -28,6 +28,7 @@ var PieChartComponent = /** @class */ (function (_super) {
         _this.labels = false;
         _this.legend = false;
         _this.legendTitle = 'Legend';
+        _this.legendPosition = 'right';
         _this.explodeSlices = false;
         _this.doughnut = false;
         _this.arcWidth = 0.25;
@@ -53,6 +54,7 @@ var PieChartComponent = /** @class */ (function (_super) {
             height: this.height,
             margins: this.margin,
             showLegend: this.legend,
+            legendPosition: this.legendPosition
         });
         var xOffset = this.margin[3] + this.dims.width / 2;
         var yOffset = this.margin[0] + this.dims.height / 2;
@@ -104,7 +106,8 @@ var PieChartComponent = /** @class */ (function (_super) {
             scaleType: 'ordinal',
             domain: this.domain,
             colors: this.colors,
-            title: this.legendTitle
+            title: this.legendTitle,
+            position: this.legendPosition
         };
     };
     PieChartComponent.prototype.onActivate = function (item) {
@@ -137,6 +140,10 @@ var PieChartComponent = /** @class */ (function (_super) {
         Input(),
         __metadata("design:type", String)
     ], PieChartComponent.prototype, "legendTitle", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], PieChartComponent.prototype, "legendPosition", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Object)
@@ -197,6 +204,10 @@ var PieChartComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", TemplateRef)
     ], PieChartComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], PieChartComponent.prototype, "margin", void 0);
     PieChartComponent = __decorate([
         Component({
             selector: 'ngx-charts-pie-chart',

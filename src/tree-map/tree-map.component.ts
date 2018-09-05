@@ -59,7 +59,7 @@ export class TreeMapComponent extends BaseChartComponent {
   colors: ColorHelper;
   treemap: any;
   data: any;
-  margin = [10, 10, 10, 10];
+  @Input() margin = [10, 10, 10, 10];
 
   update(): void {
     super.update();

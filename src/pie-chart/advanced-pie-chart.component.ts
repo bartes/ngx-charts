@@ -89,7 +89,7 @@ export class AdvancedPieChartComponent extends BaseChartComponent {
   transform: string;
   colors: ColorHelper;
   legendWidth: number;
-  margin = [20, 20, 20, 20];
+  @Input() margin = [20, 20, 20, 20];
 
   @Input() valueFormatting: (value: number) => any;
   @Input() nameFormatting: (value: string) => any;

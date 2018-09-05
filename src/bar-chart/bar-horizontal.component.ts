@@ -80,6 +80,7 @@ export class BarHorizontalComponent extends BaseChartComponent {
 
   @Input() legend = false;
   @Input() legendTitle: string = 'Legend';
+  @Input() legendPosition: string = 'right';
   @Input() xAxis;
   @Input() yAxis;
   @Input() showXAxisLabel;
@@ -115,20 +116,20 @@ export class BarHorizontalComponent extends BaseChartComponent {
   yDomain: any;
   transform: string;
   colors: ColorHelper;
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
-  legendOptions: any;  
+  legendOptions: any;
   dataLabelMaxWidth: any = {negative: 0, positive: 0};
-  
+
   update(): void {
     super.update();
 
     if (!this.showDataLabel) {
-      this.dataLabelMaxWidth = {negative: 0, positive: 0};          
+      this.dataLabelMaxWidth = {negative: 0, positive: 0};
     }
 
-    this.margin = [10, 20 + this.dataLabelMaxWidth.positive, 10, 20 + this.dataLabelMaxWidth.negative]; 
+    this.margin = [10, 20 + this.dataLabelMaxWidth.positive, 10, 20 + this.dataLabelMaxWidth.negative];
 
     this.dims = calculateViewDimensions({
       width: this.width,
@@ -141,7 +142,8 @@ export class BarHorizontalComponent extends BaseChartComponent {
       showXLabel: this.showXAxisLabel,
       showYLabel: this.showYAxisLabel,
       showLegend: this.legend,
-      legendType: this.schemeType      
+      legendType: this.schemeType,
+      legendPosition: this.legendPosition
     });
    
     this.xScale = this.getXScale();
@@ -209,7 +211,8 @@ export class BarHorizontalComponent extends BaseChartComponent {
       scaleType: this.schemeType,
       colors: undefined,
       domain: [],
-      title: undefined
+      title: undefined,
+      position: this.legendPosition
     };
     if (opts.scaleType === 'ordinal') {
       opts.domain = this.yDomain;

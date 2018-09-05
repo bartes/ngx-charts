@@ -104,6 +104,10 @@ var AdvancedPieChartComponent = /** @class */ (function (_super) {
     ], AdvancedPieChartComponent.prototype, "tooltipTemplate", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Object)
+    ], AdvancedPieChartComponent.prototype, "margin", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Function)
     ], AdvancedPieChartComponent.prototype, "valueFormatting", void 0);
     __decorate([
