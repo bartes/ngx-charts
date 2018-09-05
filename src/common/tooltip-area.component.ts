@@ -15,6 +15,7 @@ import {
   transition
 } from '@angular/animations';
 import { MouseEvent } from '../events';
+import { isRelatedEntry } from './domain.helper';
 
 @Component({
   selector: 'g[ngx-charts-tooltip-area]',
@@ -98,16 +99,25 @@ export class TooltipArea {
   @Input() tooltipDisabled: boolean = false;
   @Input() tooltipTemplate: TemplateRef<any>;
 
+  @Input() hiddenEntries: any[];
+
   @Output() hover = new EventEmitter();
 
   @ViewChild('tooltipAnchor') tooltipAnchor;
 
   constructor(private renderer: Renderer) { }
 
+  isHidden(entry): boolean {
+    return isRelatedEntry(this.hiddenEntries, entry.name);
+  }
+
   getValues(xVal): any[] {
     const results = [];
 
     for (const group of this.results) {
+      if (this.isHidden({ name: group.name })) {
+        continue;
+      }
       const item = group.series.find(d => d.name.toString() === xVal.toString());
       let groupName = group.name;
       if (groupName instanceof Date) {

@@ -3,6 +3,7 @@ import {
   SimpleChanges, OnChanges, ChangeDetectorRef, ViewEncapsulation
  } from '@angular/core';
 import { formatLabel } from '../label.helper';
+import { isRelatedEntry } from '../domain.helper';
 
 @Component({
   selector: 'ngx-charts-legend',
@@ -22,7 +23,9 @@ import { formatLabel } from '../label.helper';
               [formattedLabel]="entry.formattedLabel"
               [color]="entry.color"
               [isActive]="isActive(entry)"
+              [isHidden]="isHidden(entry)"
               (select)="labelClick.emit($event)"
+              (toggle)="labelToggle.emit($event)"
               (activate)="activate($event)"
               (deactivate)="deactivate($event)">
             </ngx-charts-legend-entry>
@@ -43,9 +46,11 @@ export class LegendComponent implements OnChanges {
   @Input() height;
   @Input() width;
   @Input() activeEntries;
+  @Input() hiddenEntries;
   @Input() horizontal = false;
 
   @Output() labelClick: EventEmitter<any> = new EventEmitter();
+  @Output() labelToggle: EventEmitter<any> = new EventEmitter();
   @Output() labelActivate: EventEmitter<any> = new EventEmitter();
   @Output() labelDeactivate: EventEmitter<any> = new EventEmitter();
 
@@ -85,11 +90,11 @@ export class LegendComponent implements OnChanges {
   }
 
   isActive(entry): boolean {
-    if(!this.activeEntries) return false;
-    const item = this.activeEntries.find(d => {
-      return entry.label === d.name;
-    });
-    return item !== undefined;
+    return isRelatedEntry(this.activeEntries, entry.label);
+  }
+
+  isHidden(entry): boolean {
+    return isRelatedEntry(this.hiddenEntries, entry.label);
   }
 
   activate(item) {

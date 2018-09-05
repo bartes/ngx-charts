@@ -22,7 +22,7 @@ import { calculateViewDimensions, ViewDimensions } from '../common/view-dimensio
 import { ColorHelper } from '../common/color.helper';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { id } from '../utils/id';
-import { getUniqueXDomainValues } from '../common/domain.helper';
+import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper';
 
 @Component({
   selector: 'ngx-charts-line-chart',
@@ -32,8 +32,10 @@ import { getUniqueXDomainValues } from '../common/domain.helper';
       [showLegend]="legend"
       [legendOptions]="legendOptions"
       [activeEntries]="activeEntries"
+      [hiddenEntries]="hiddenEntries"
       [animations]="animations"
-      (legendLabelClick)="onClick($event)"
+      (legendLabelClick)="onLegendClick($event)"
+      (legendLabelToggle)="onLegendToggle($event)"
       (legendLabelActivate)="onActivate($event)"
       (legendLabelDeactivate)="onDeactivate($event)">
       <svg:defs>
@@ -72,20 +74,21 @@ import { getUniqueXDomainValues } from '../common/domain.helper';
         </svg:g>
         <svg:g [attr.clip-path]="clipPath">
           <svg:g *ngFor="let series of results; trackBy:trackBy" [@animationState]="'active'">
-            <svg:g ngx-charts-line-series
-              [xScale]="xScale"
-              [yScale]="yScale"
-              [colors]="colors"
-              [data]="series"
-              [activeEntries]="activeEntries"
-              [scaleType]="scaleType"
-              [curve]="curve"
-              [rangeFillOpacity]="rangeFillOpacity"
-              [hasRange]="hasRange"
-              [animations]="animations"
-            />
+            <svg:g *ngIf="!isHidden(series)">
+              <svg:g ngx-charts-line-series
+                [xScale]="xScale"
+                [yScale]="yScale"
+                [colors]="colors"
+                [data]="series"
+                [activeEntries]="activeEntries"
+                [scaleType]="scaleType"
+                [curve]="curve"
+                [rangeFillOpacity]="rangeFillOpacity"
+                [hasRange]="hasRange"
+                [animations]="animations"
+              />
+            </svg:g>
           </svg:g>
-
           <svg:g *ngIf="!tooltipDisabled" (mouseleave)="hideCircles()">
             <svg:g ngx-charts-tooltip-area
               [dims]="dims"
@@ -94,26 +97,29 @@ import { getUniqueXDomainValues } from '../common/domain.helper';
               [yScale]="yScale"
               [results]="results"
               [colors]="colors"
+              [hiddenEntries]="hiddenEntries"
               [tooltipDisabled]="tooltipDisabled"
               [tooltipTemplate]="seriesTooltipTemplate"
               (hover)="updateHoveredVertical($event)"
             />
 
             <svg:g *ngFor="let series of results">
-              <svg:g ngx-charts-circle-series
-                [xScale]="xScale"
-                [yScale]="yScale"
-                [colors]="colors"
-                [data]="series"
-                [scaleType]="scaleType"
-                [visibleValue]="hoveredVertical"
-                [activeEntries]="activeEntries"
-                [tooltipDisabled]="tooltipDisabled"
-                [tooltipTemplate]="tooltipTemplate"
-                (select)="onClick($event, series)"
-                (activate)="onActivate($event)"
-                (deactivate)="onDeactivate($event)"
-              />
+              <svg:g *ngIf="!isHidden(series)">
+                <svg:g ngx-charts-circle-series
+                  [xScale]="xScale"
+                  [yScale]="yScale"
+                  [colors]="colors"
+                  [data]="series"
+                  [scaleType]="scaleType"
+                  [visibleValue]="hoveredVertical"
+                  [activeEntries]="activeEntries"
+                  [tooltipDisabled]="tooltipDisabled"
+                  [tooltipTemplate]="tooltipTemplate"
+                  (select)="onSeriesClick($event, series)"
+                  (activate)="onActivate($event)"
+                  (deactivate)="onDeactivate($event)"
+                />
+              </svg:g>
             </svg:g>
           </svg:g>
         </svg:g>
@@ -127,19 +133,22 @@ import { getUniqueXDomainValues } from '../common/domain.helper';
         [scheme]="scheme"
         [customColors]="customColors"
         [scaleType]="scaleType"
+        [hiddenEntries]="hiddenEntries"
         [legend]="legend"
         (onDomainChange)="updateDomain($event)">
         <svg:g *ngFor="let series of results; trackBy:trackBy">
-          <svg:g ngx-charts-line-series
-            [xScale]="timelineXScale"
-            [yScale]="timelineYScale"
-            [colors]="colors"
-            [data]="series"
-            [scaleType]="scaleType"
-            [curve]="curve"
-            [hasRange]="hasRange"
-            [animations]="animations"
-          />
+          <svg:g *ngIf="!isHidden(series)">
+            <svg:g ngx-charts-line-series
+              [xScale]="timelineXScale"
+              [yScale]="timelineYScale"
+              [colors]="colors"
+              [data]="series"
+              [scaleType]="scaleType"
+              [curve]="curve"
+              [hasRange]="hasRange"
+              [animations]="animations"
+            />
+          </svg:g>
         </svg:g>
       </svg:g>
     </ngx-charts-chart>
@@ -177,6 +186,8 @@ export class LineChartComponent extends BaseChartComponent {
   @Input() showGridLines: boolean = true;
   @Input() curve: any = curveLinear;
   @Input() activeEntries: any[] = [];
+  @Input() enableSeriesHidding: boolean = false;
+  @Input() hiddenEntries: any[] = [];
   @Input() schemeType: string;
   @Input() rangeFillOpacity: number;
   @Input() xAxisTickFormatting: any;
@@ -196,6 +207,9 @@ export class LineChartComponent extends BaseChartComponent {
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
 
+  @Output() showSeries: EventEmitter<any> = new EventEmitter();
+  @Output() hideSeries: EventEmitter<any> = new EventEmitter();
+
   @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
   @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
 
@@ -203,6 +217,7 @@ export class LineChartComponent extends BaseChartComponent {
   xSet: any;
   xDomain: any;
   yDomain: any;
+  yDomainAll: any;
   seriesDomain: any;
   yScale: any;
   xScale: any;
@@ -228,6 +243,10 @@ export class LineChartComponent extends BaseChartComponent {
   timelineTransform: any;
   timelinePadding: number = 10;
 
+  isHidden(entry): boolean {
+    return isRelatedEntry(this.hiddenEntries, entry.name);
+  }
+
   update(): void {
     super.update();
 
@@ -250,12 +269,17 @@ export class LineChartComponent extends BaseChartComponent {
       this.dims.height -= (this.timelineHeight + this.margin[2] + this.timelinePadding);
     }
 
+    if( !this.enableSeriesHidding && this.hiddenEntries.length > 0 ) {
+      this.hiddenEntries = [];
+    }
+
     this.xDomain = this.getXDomain();
     if (this.filteredDomain) {
       this.xDomain = this.filteredDomain;
     }
 
-    this.yDomain = this.getYDomain();
+    this.yDomain = this.getYDomain(true);
+    this.yDomainAll = this.getYDomain();
     this.seriesDomain = this.getSeriesDomain();
 
     this.xScale = this.getXScale(this.xDomain, this.dims.width);
@@ -283,7 +307,7 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   getXDomain(): any[] {
-    let values = getUniqueXDomainValues(this.results);
+    let values = getUniqueXDomainValues(this.results, this.hiddenEntries);
 
     this.scaleType = this.getScaleType(values);
     let domain = [];
@@ -325,9 +349,12 @@ export class LineChartComponent extends BaseChartComponent {
     return domain;
   }
 
-  getYDomain(): any[] {
+  getYDomain(excludeHidden: boolean = false): any[] {
     const domain = [];
     for (const results of this.results) {
+      if (excludeHidden && this.isHidden({ name: results.name })) {
+        continue;
+      }
       for (const d of results.series) {
         if (domain.indexOf(d.value) < 0) {
           domain.push(d.value);
@@ -444,7 +471,31 @@ export class LineChartComponent extends BaseChartComponent {
     this.deactivateAll();
   }
 
-  onClick(data, series?): void {
+  onLegendClick(data): void {
+    this.select.emit(data);
+  }
+
+  onLegendToggle(data): void {
+    if (this.enableSeriesHidding) {
+      this.toggleHidden(data);
+    }
+  }
+
+  toggleHidden(item) {
+    const idx = this.hiddenEntries.findIndex(d => {
+      return d.name === item.name;
+    });
+    if (idx > -1) {
+      this.hiddenEntries = [...this.hiddenEntries.slice(0, idx), ...this.hiddenEntries.slice(idx + 1)];
+      this.hideSeries.emit({ value: item, entries: this.hiddenEntries });
+    } else {
+      this.hiddenEntries = [ item, ...this.hiddenEntries ];
+      this.showSeries.emit({ value: item, entries: this.hiddenEntries });
+    }
+    this.update();
+  }
+
+  onSeriesClick(data, series?): void {
     if (series) {
       data.series = series.name;
     }
@@ -461,7 +512,7 @@ export class LineChartComponent extends BaseChartComponent {
     if (this.schemeType === 'ordinal') {
       domain = this.seriesDomain;
     } else {
-      domain = this.yDomain;
+      domain = this.yDomainAll;
     }
 
     this.colors = new ColorHelper(this.scheme, this.schemeType, domain, this.customColors);
@@ -480,7 +531,7 @@ export class LineChartComponent extends BaseChartComponent {
       opts.colors = this.colors;
       opts.title = this.legendTitle;
     } else {
-      opts.domain = this.yDomain;
+      opts.domain = this.yDomainAll;
       opts.colors = this.colors.scale;
     }
     return opts;
