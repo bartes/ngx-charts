@@ -35,17 +35,37 @@
     background: rgba(0,0,0,0.05);
   }
 
+  .legend-wrap.horizontal-legend {
+    width: 100%;
+    margin-top: -35px;
+    .legend-labels {
+      text-align: center;
+      .legend-label {
+        display: inline-block;
+        margin: 4px;
+        .legend-label-color {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+
   .legend-label {
     cursor: pointer;
     font-size: 90%;
-    margin: 8px;
+    margin: 4px 0;
     color: #AFB7C8;
-    
+
     &:hover {
       color: #000;
       -webkit-transition: 0.2s;
       -moz-transition: 0.2s;
       transition: 0.2s;
+    }
+
+    .legend-label-box {
+      border-radius: 3px;
+      padding: 4px 4px 0 4px;
     }
 
     .active {
@@ -60,6 +80,7 @@
     height: 15px;
     width: 15px;
     margin-right: 5px;
+    margin-left: 5px;
     color: #5b646b;
     border-radius: 3px;
   }

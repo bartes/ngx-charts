@@ -11,9 +11,9 @@ import { formatLabel } from '../label.helper';
       <header class="legend-title" *ngIf="title?.length > 0">
         <span class="legend-title-text">{{title}}</span>
       </header>
-      <div class="legend-wrap">
+      <div class="legend-wrap" [class.horizontal-legend]="horizontal">
         <ul class="legend-labels"
-          [style.max-height.px]="height - 45">
+          [style.max-height.px]="horizontal ? 25 : height - 45">
           <li
             *ngFor="let entry of legendEntries; trackBy: trackBy"
             class="legend-label">
@@ -43,6 +43,7 @@ export class LegendComponent implements OnChanges {
   @Input() height;
   @Input() width;
   @Input() activeEntries;
+  @Input() horizontal = false;
 
   @Output() labelClick: EventEmitter<any> = new EventEmitter();
   @Output() labelActivate: EventEmitter<any> = new EventEmitter();
