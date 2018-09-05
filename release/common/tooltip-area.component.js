@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Component, Input, Output, EventEmitter, ViewChild, Renderer, ChangeDetectionStrategy, TemplateRef, } from '@angular/core';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { MouseEvent } from '../events';
+import { isRelatedEntry } from './domain.helper';
 var TooltipArea = /** @class */ (function () {
     function TooltipArea(renderer) {
         this.renderer = renderer;
@@ -20,10 +21,16 @@ var TooltipArea = /** @class */ (function () {
         this.tooltipDisabled = false;
         this.hover = new EventEmitter();
     }
+    TooltipArea.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     TooltipArea.prototype.getValues = function (xVal) {
         var results = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var group = _a[_i];
+            if (this.isHidden({ name: group.name })) {
+                continue;
+            }
             var item = group.series.find(function (d) { return d.name.toString() === xVal.toString(); });
             var groupName = group.name;
             if (groupName instanceof Date) {
@@ -58,6 +65,15 @@ var TooltipArea = /** @class */ (function () {
         }
         return results;
     };
+    TooltipArea.prototype.calculateAnchor = function (data) {
+        var position = data.position * this.dims.width / data.width;
+        var closestIndex = this.findClosestPointIndex(position);
+        var closestPoint = this.xSet[closestIndex];
+        var anchorPos = this.xScale(closestPoint);
+        anchorPos = Math.max(0, anchorPos);
+        anchorPos = Math.min(this.dims.width, anchorPos);
+        return anchorPos;
+    };
     TooltipArea.prototype.mouseMove = function (event) {
         var xPos = event.pageX - event.target.getBoundingClientRect().left;
         var closestIndex = this.findClosestPointIndex(xPos);
@@ -71,6 +87,8 @@ var TooltipArea = /** @class */ (function () {
             this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [ev]);
             this.anchorOpacity = 0.7;
             this.hover.emit({
+                position: xPos,
+                width: this.dims.width,
                 value: closestPoint
             });
             this.showTooltip();
@@ -184,6 +202,14 @@ var TooltipArea = /** @class */ (function () {
         __metadata("design:type", TemplateRef)
     ], TooltipArea.prototype, "tooltipTemplate", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], TooltipArea.prototype, "hiddenEntries", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], TooltipArea.prototype, "syncedHoveredVertical", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", Object)
     ], TooltipArea.prototype, "hover", void 0);
@@ -194,7 +220,7 @@ var TooltipArea = /** @class */ (function () {
     TooltipArea = __decorate([
         Component({
             selector: 'g[ngx-charts-tooltip-area]',
-            template: "\n    <svg:g>\n      <svg:rect\n        class=\"tooltip-area\"\n        [attr.x]=\"0\"\n        y=\"0\"\n        [attr.width]=\"dims.width\"\n        [attr.height]=\"dims.height\"\n        style=\"opacity: 0; cursor: 'auto';\"\n        (mousemove)=\"mouseMove($event)\"\n        (mouseleave)=\"hideTooltip()\"\n      />\n      <xhtml:ng-template #defaultTooltipTemplate let-model=\"model\">\n        <xhtml:div class=\"area-tooltip-container\">\n          <xhtml:div\n            *ngFor=\"let tooltipItem of model\"\n            class=\"tooltip-item\">\n            <span\n              class=\"tooltip-item-color\"\n              [style.background-color]=\"tooltipItem.color\">\n            </span>\n            {{getToolTipText(tooltipItem)}}\n          </xhtml:div>\n        </xhtml:div>\n      </xhtml:ng-template>\n      <svg:rect\n        #tooltipAnchor\n        [@animationState]=\"anchorOpacity !== 0 ? 'active' : 'inactive'\"\n        class=\"tooltip-anchor\"\n        [attr.x]=\"anchorPos\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.opacity]=\"anchorOpacity\"\n        [style.pointer-events]=\"'none'\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipPlacement]=\"'right'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipSpacing]=\"15\"\n        [tooltipTemplate]=\"tooltipTemplate ? tooltipTemplate: defaultTooltipTemplate\"\n        [tooltipContext]=\"anchorValues\"\n        [tooltipImmediateExit]=\"true\"\n      />\n    </svg:g>\n  ",
+            template: "\n    <svg:g>\n      <svg:rect\n        class=\"tooltip-area\"\n        [attr.x]=\"0\"\n        y=\"0\"\n        [attr.width]=\"dims.width\"\n        [attr.height]=\"dims.height\"\n        style=\"opacity: 0; cursor: 'auto';\"\n        (mousemove)=\"mouseMove($event)\"\n        (mouseleave)=\"hideTooltip()\"\n      />\n      <xhtml:ng-template #defaultTooltipTemplate let-model=\"model\">\n        <xhtml:div class=\"area-tooltip-container\">\n          <xhtml:div\n            *ngFor=\"let tooltipItem of model\"\n            class=\"tooltip-item\">\n            <span\n              class=\"tooltip-item-color\"\n              [style.background-color]=\"tooltipItem.color\">\n            </span>\n            {{getToolTipText(tooltipItem)}}\n          </xhtml:div>\n        </xhtml:div>\n      </xhtml:ng-template>\n      <svg:rect\n        class=\"tooltip-anchor\"\n        [attr.x]=\"calculateAnchor(syncedHoveredVertical)\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.pointer-events]=\"'none'\"\n        *ngIf=\"syncedHoveredVertical && anchorOpacity == 0\"\n      />\n      <svg:rect\n        #tooltipAnchor\n        [@animationState]=\"anchorOpacity !== 0 ? 'active' : 'inactive'\"\n        class=\"tooltip-anchor\"\n        [attr.x]=\"anchorPos\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.opacity]=\"anchorOpacity\"\n        [style.pointer-events]=\"'none'\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipPlacement]=\"'right'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipSpacing]=\"15\"\n        [tooltipTemplate]=\"tooltipTemplate ? tooltipTemplate: defaultTooltipTemplate\"\n        [tooltipContext]=\"anchorValues\"\n        [tooltipImmediateExit]=\"true\"\n      />\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [

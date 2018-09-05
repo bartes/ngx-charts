@@ -26,16 +26,29 @@
     overflow-x: hidden;
     white-space: nowrap;
     background: rgba(0, 0, 0, 0.05); }
+  .chart-legend .legend-wrap.horizontal-legend {
+    width: 100%;
+    margin-top: -35px; }
+    .chart-legend .legend-wrap.horizontal-legend .legend-labels {
+      text-align: center; }
+      .chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label {
+        display: inline-block;
+        margin: 4px; }
+        .chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label .legend-label-color {
+          margin-left: 0; }
   .chart-legend .legend-label {
     cursor: pointer;
     font-size: 90%;
-    margin: 8px;
+    margin: 4px 0;
     color: #AFB7C8; }
     .chart-legend .legend-label:hover {
       color: #000;
       -webkit-transition: 0.2s;
       -moz-transition: 0.2s;
       transition: 0.2s; }
+    .chart-legend .legend-label .legend-label-box {
+      border-radius: 3px;
+      padding: 4px 4px 0 4px; }
     .chart-legend .legend-label .active .legend-label-text {
       color: #000; }
   .chart-legend .legend-label-color {
@@ -43,6 +56,7 @@
     height: 15px;
     width: 15px;
     margin-right: 5px;
+    margin-left: 5px;
     color: #5b646b;
     border-radius: 3px; }
   .chart-legend .legend-label-text {

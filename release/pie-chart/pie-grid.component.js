@@ -134,6 +134,10 @@ var PieGridComponent = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], PieGridComponent.prototype, "minWidth", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], PieGridComponent.prototype, "margin", void 0);
+    __decorate([
         ContentChild('tooltipTemplate'),
         __metadata("design:type", TemplateRef)
     ], PieGridComponent.prototype, "tooltipTemplate", void 0);

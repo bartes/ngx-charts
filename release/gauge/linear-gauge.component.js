@@ -166,6 +166,10 @@ var LinearGaugeComponent = /** @class */ (function (_super) {
         ViewChild('unitsTextEl'),
         __metadata("design:type", ElementRef)
     ], LinearGaugeComponent.prototype, "unitsTextEl", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], LinearGaugeComponent.prototype, "margin", void 0);
     LinearGaugeComponent = __decorate([
         Component({
             selector: 'ngx-charts-linear-gauge',

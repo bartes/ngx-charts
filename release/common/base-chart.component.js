@@ -44,12 +44,20 @@ var BaseChartComponent = /** @class */ (function () {
         else {
             this.results = [];
         }
+        var dims = (!this.view || this.view[0] === null || this.view[1] === null) ? this.getContainerDims() : undefined;
         if (this.view) {
             this.width = this.view[0];
             this.height = this.view[1];
+            if (dims) {
+                if (this.width === null) {
+                    this.width = dims.width;
+                }
+                if (this.height === null) {
+                    this.height = dims.height;
+                }
+            }
         }
         else {
-            var dims = this.getContainerDims();
             if (dims) {
                 this.width = dims.width;
                 this.height = dims.height;
