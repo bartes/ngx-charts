@@ -7,7 +7,10 @@ export declare class LegendComponent implements OnChanges {
     height: any;
     width: any;
     activeEntries: any;
+    horizontal: boolean;
+    hiddenEntries: any;
     labelClick: EventEmitter<any>;
+    labelToggle: EventEmitter<any>;
     labelActivate: EventEmitter<any>;
     labelDeactivate: EventEmitter<any>;
     legendEntries: any[];
@@ -16,6 +19,7 @@ export declare class LegendComponent implements OnChanges {
     update(): void;
     getLegendEntries(): any[];
     isActive(entry: any): boolean;
+    isHidden(entry: any): boolean;
     activate(item: any): void;
     deactivate(item: any): void;
     trackBy(index: any, item: any): string;

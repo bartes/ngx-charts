@@ -11,6 +11,7 @@ import { Component, Input, Output, ChangeDetectionStrategy, HostListener, EventE
 var LegendEntryComponent = /** @class */ (function () {
     function LegendEntryComponent() {
         this.isActive = false;
+        this.isHidden = false;
         this.select = new EventEmitter();
         this.activate = new EventEmitter();
         this.deactivate = new EventEmitter();
@@ -29,6 +30,10 @@ var LegendEntryComponent = /** @class */ (function () {
     LegendEntryComponent.prototype.onMouseLeave = function () {
         this.deactivate.emit({ name: this.label });
     };
+    LegendEntryComponent.prototype.onClick = function ($event) {
+        this.select.emit(this.formattedLabel);
+        this.toggle.emit({ name: this.label });
+    };
     __decorate([
         Input(),
         __metadata("design:type", String)
@@ -45,6 +50,10 @@ var LegendEntryComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], LegendEntryComponent.prototype, "isActive", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], LegendEntryComponent.prototype, "isHidden", void 0);
     __decorate([
         Output(),
         __metadata("design:type", EventEmitter)
@@ -76,7 +85,7 @@ var LegendEntryComponent = /** @class */ (function () {
     LegendEntryComponent = __decorate([
         Component({
             selector: 'ngx-charts-legend-entry',
-            template: "\n    <span \n      [title]=\"formattedLabel\"\n      tabindex=\"-1\"\n      [class.active]=\"isActive\"\n      (click)=\"select.emit(formattedLabel)\">\n      <span\n        class=\"legend-label-color\"\n        [style.background-color]=\"color\"\n        (click)=\"toggle.emit(formattedLabel)\">\n      </span>\n      <span class=\"legend-label-text\">\n        {{trimmedLabel}}\n      </span>\n    </span>\n  ",
+            template: "\n    <span \n      [title]=\"formattedLabel\"\n      tabindex=\"-1\"\n      class=\"legend-label-box\"\n      [class.active]=\"isActive\"\n      [class.hiddenSeries]=\"isHidden\"\n      (click)=\"onClick($event)\">\n      <span\n        class=\"legend-label-color\"\n        [style.background-color]=\"color\">\n      </span>\n      <span class=\"legend-label-text\">\n        {{trimmedLabel}}\n      </span>\n    </span>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush
         })
     ], LegendEntryComponent);

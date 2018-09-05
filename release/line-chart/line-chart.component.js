@@ -25,21 +25,26 @@ import { calculateViewDimensions } from '../common/view-dimensions.helper';
 import { ColorHelper } from '../common/color.helper';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { id } from '../utils/id';
-import { getUniqueXDomainValues } from '../common/domain.helper';
+import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper';
 var LineChartComponent = /** @class */ (function (_super) {
     __extends(LineChartComponent, _super);
     function LineChartComponent() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.legendTitle = 'Legend';
+        _this.legendPosition = 'right';
         _this.showGridLines = true;
         _this.curve = curveLinear;
         _this.activeEntries = [];
+        _this.enableSeriesHidding = false;
+        _this.hiddenEntries = [];
         _this.roundDomains = false;
         _this.tooltipDisabled = false;
         _this.showRefLines = false;
         _this.showRefLabels = true;
         _this.activate = new EventEmitter();
         _this.deactivate = new EventEmitter();
+        _this.showSeries = new EventEmitter();
+        _this.hideSeries = new EventEmitter();
         _this.margin = [10, 20, 10, 20];
         _this.xAxisHeight = 0;
         _this.yAxisWidth = 0;
@@ -47,6 +52,9 @@ var LineChartComponent = /** @class */ (function (_super) {
         _this.timelinePadding = 10;
         return _this;
     }
+    LineChartComponent.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     LineChartComponent.prototype.update = function () {
         _super.prototype.update.call(this);
         this.dims = calculateViewDimensions({
@@ -61,15 +69,20 @@ var LineChartComponent = /** @class */ (function (_super) {
             showYLabel: this.showYAxisLabel,
             showLegend: this.legend,
             legendType: this.schemeType,
+            legendPosition: this.legendPosition
         });
         if (this.timeline) {
             this.dims.height -= (this.timelineHeight + this.margin[2] + this.timelinePadding);
+        }
+        if (!this.enableSeriesHidding && this.hiddenEntries.length > 0) {
+            this.hiddenEntries = [];
         }
         this.xDomain = this.getXDomain();
         if (this.filteredDomain) {
             this.xDomain = this.filteredDomain;
         }
-        this.yDomain = this.getYDomain();
+        this.yDomain = this.getYDomain(true);
+        this.yDomainAll = this.getYDomain();
         this.seriesDomain = this.getSeriesDomain();
         this.xScale = this.getXScale(this.xDomain, this.dims.width);
         this.yScale = this.getYScale(this.yDomain, this.dims.height);
@@ -90,7 +103,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
     };
     LineChartComponent.prototype.getXDomain = function () {
-        var values = getUniqueXDomainValues(this.results);
+        var values = getUniqueXDomainValues(this.results, this.hiddenEntries);
         this.scaleType = this.getScaleType(values);
         var domain = [];
         if (this.scaleType === 'linear') {
@@ -129,10 +142,14 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
         return domain;
     };
-    LineChartComponent.prototype.getYDomain = function () {
+    LineChartComponent.prototype.getYDomain = function (excludeHidden) {
+        if (excludeHidden === void 0) { excludeHidden = false; }
         var domain = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var results = _a[_i];
+            if (excludeHidden && this.isHidden({ name: results.name })) {
+                continue;
+            }
             for (var _b = 0, _c = results.series; _b < _c.length; _b++) {
                 var d = _c[_b];
                 if (domain.indexOf(d.value) < 0) {
@@ -233,7 +250,29 @@ var LineChartComponent = /** @class */ (function (_super) {
         this.hoveredVertical = null;
         this.deactivateAll();
     };
-    LineChartComponent.prototype.onClick = function (data, series) {
+    LineChartComponent.prototype.onLegendClick = function (data) {
+        this.select.emit(data);
+    };
+    LineChartComponent.prototype.onLegendToggle = function (data) {
+        if (this.enableSeriesHidding) {
+            this.toggleHidden(data);
+        }
+    };
+    LineChartComponent.prototype.toggleHidden = function (item) {
+        var idx = this.hiddenEntries.findIndex(function (d) {
+            return d.name === item.name;
+        });
+        if (idx > -1) {
+            this.hiddenEntries = this.hiddenEntries.slice(0, idx).concat(this.hiddenEntries.slice(idx + 1));
+            this.hideSeries.emit({ value: item, entries: this.hiddenEntries });
+        }
+        else {
+            this.hiddenEntries = [item].concat(this.hiddenEntries);
+            this.showSeries.emit({ value: item, entries: this.hiddenEntries });
+        }
+        this.update();
+    };
+    LineChartComponent.prototype.onSeriesClick = function (data, series) {
         if (series) {
             data.series = series.name;
         }
@@ -248,7 +287,7 @@ var LineChartComponent = /** @class */ (function (_super) {
             domain = this.seriesDomain;
         }
         else {
-            domain = this.yDomain;
+            domain = this.yDomainAll;
         }
         this.colors = new ColorHelper(this.scheme, this.schemeType, domain, this.customColors);
     };
@@ -257,7 +296,8 @@ var LineChartComponent = /** @class */ (function (_super) {
             scaleType: this.schemeType,
             colors: undefined,
             domain: [],
-            title: undefined
+            title: undefined,
+            position: this.legendPosition
         };
         if (opts.scaleType === 'ordinal') {
             opts.domain = this.seriesDomain;
@@ -265,7 +305,7 @@ var LineChartComponent = /** @class */ (function (_super) {
             opts.title = this.legendTitle;
         }
         else {
-            opts.domain = this.yDomain;
+            opts.domain = this.yDomainAll;
             opts.colors = this.colors.scale;
         }
         return opts;
@@ -317,6 +357,10 @@ var LineChartComponent = /** @class */ (function (_super) {
     ], LineChartComponent.prototype, "legendTitle", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", String)
+    ], LineChartComponent.prototype, "legendPosition", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Object)
     ], LineChartComponent.prototype, "xAxis", void 0);
     __decorate([
@@ -363,6 +407,14 @@ var LineChartComponent = /** @class */ (function (_super) {
         Input(),
         __metadata("design:type", Array)
     ], LineChartComponent.prototype, "activeEntries", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], LineChartComponent.prototype, "enableSeriesHidding", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], LineChartComponent.prototype, "hiddenEntries", void 0);
     __decorate([
         Input(),
         __metadata("design:type", String)
@@ -432,6 +484,14 @@ var LineChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", EventEmitter)
     ], LineChartComponent.prototype, "deactivate", void 0);
     __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], LineChartComponent.prototype, "showSeries", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], LineChartComponent.prototype, "hideSeries", void 0);
+    __decorate([
         ContentChild('tooltipTemplate'),
         __metadata("design:type", TemplateRef)
     ], LineChartComponent.prototype, "tooltipTemplate", void 0);
@@ -439,6 +499,10 @@ var LineChartComponent = /** @class */ (function (_super) {
         ContentChild('seriesTooltipTemplate'),
         __metadata("design:type", TemplateRef)
     ], LineChartComponent.prototype, "seriesTooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LineChartComponent.prototype, "margin", void 0);
     __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
@@ -448,7 +512,7 @@ var LineChartComponent = /** @class */ (function (_super) {
     LineChartComponent = __decorate([
         Component({
             selector: 'ngx-charts-line-chart',
-            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onClick($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\">\n      <svg:defs>\n        <svg:clipPath [attr.id]=\"clipPathId\">\n          <svg:rect\n            [attr.width]=\"dims.width + 10\"\n            [attr.height]=\"dims.height + 10\"\n            [attr.transform]=\"'translate(-5, -5)'\"/>\n        </svg:clipPath>\n      </svg:defs>\n      <svg:g [attr.transform]=\"transform\" class=\"line-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          [referenceLines]=\"referenceLines\"\n          [showRefLines]=\"showRefLines\"\n          [showRefLabels]=\"showRefLabels\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g [attr.clip-path]=\"clipPath\">\n          <svg:g *ngFor=\"let series of results; trackBy:trackBy\" [@animationState]=\"'active'\">\n            <svg:g ngx-charts-line-series\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [colors]=\"colors\"\n              [data]=\"series\"\n              [activeEntries]=\"activeEntries\"\n              [scaleType]=\"scaleType\"\n              [curve]=\"curve\"\n              [rangeFillOpacity]=\"rangeFillOpacity\"\n              [hasRange]=\"hasRange\"\n              [animations]=\"animations\"\n            />\n          </svg:g>\n\n          <svg:g *ngIf=\"!tooltipDisabled\" (mouseleave)=\"hideCircles()\">\n            <svg:g ngx-charts-tooltip-area\n              [dims]=\"dims\"\n              [xSet]=\"xSet\"\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [results]=\"results\"\n              [colors]=\"colors\"\n              [tooltipDisabled]=\"tooltipDisabled\"\n              [tooltipTemplate]=\"seriesTooltipTemplate\"\n              (hover)=\"updateHoveredVertical($event)\"\n            />\n\n            <svg:g *ngFor=\"let series of results\">\n              <svg:g ngx-charts-circle-series\n                [xScale]=\"xScale\"\n                [yScale]=\"yScale\"\n                [colors]=\"colors\"\n                [data]=\"series\"\n                [scaleType]=\"scaleType\"\n                [visibleValue]=\"hoveredVertical\"\n                [activeEntries]=\"activeEntries\"\n                [tooltipDisabled]=\"tooltipDisabled\"\n                [tooltipTemplate]=\"tooltipTemplate\"\n                (select)=\"onClick($event, series)\"\n                (activate)=\"onActivate($event)\"\n                (deactivate)=\"onDeactivate($event)\"\n              />\n            </svg:g>\n          </svg:g>\n        </svg:g>\n      </svg:g>\n      <svg:g ngx-charts-timeline\n        *ngIf=\"timeline && scaleType != 'ordinal'\"\n        [attr.transform]=\"timelineTransform\"\n        [results]=\"results\"\n        [view]=\"[timelineWidth, height]\"\n        [height]=\"timelineHeight\"\n        [scheme]=\"scheme\"\n        [customColors]=\"customColors\"\n        [scaleType]=\"scaleType\"\n        [legend]=\"legend\"\n        (onDomainChange)=\"updateDomain($event)\">\n        <svg:g *ngFor=\"let series of results; trackBy:trackBy\">\n          <svg:g ngx-charts-line-series\n            [xScale]=\"timelineXScale\"\n            [yScale]=\"timelineYScale\"\n            [colors]=\"colors\"\n            [data]=\"series\"\n            [scaleType]=\"scaleType\"\n            [curve]=\"curve\"\n            [hasRange]=\"hasRange\"\n            [animations]=\"animations\"\n          />\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
+            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [hiddenEntries]=\"hiddenEntries\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onLegendClick($event)\"\n      (legendLabelToggle)=\"onLegendToggle($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\">\n      <svg:defs>\n        <svg:clipPath [attr.id]=\"clipPathId\">\n          <svg:rect\n            [attr.width]=\"dims.width + 10\"\n            [attr.height]=\"dims.height + 10\"\n            [attr.transform]=\"'translate(-5, -5)'\"/>\n        </svg:clipPath>\n      </svg:defs>\n      <svg:g [attr.transform]=\"transform\" class=\"line-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          [referenceLines]=\"referenceLines\"\n          [showRefLines]=\"showRefLines\"\n          [showRefLabels]=\"showRefLabels\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g [attr.clip-path]=\"clipPath\">\n          <svg:g *ngFor=\"let series of results; trackBy:trackBy\" [@animationState]=\"'active'\">\n            <svg:g *ngIf=\"!isHidden(series)\">\n              <svg:g ngx-charts-line-series\n                [xScale]=\"xScale\"\n                [yScale]=\"yScale\"\n                [colors]=\"colors\"\n                [data]=\"series\"\n                [activeEntries]=\"activeEntries\"\n                [scaleType]=\"scaleType\"\n                [curve]=\"curve\"\n                [rangeFillOpacity]=\"rangeFillOpacity\"\n                [hasRange]=\"hasRange\"\n                [animations]=\"animations\"\n              />\n            </svg:g>\n          </svg:g>\n          <svg:g *ngIf=\"!tooltipDisabled\" (mouseleave)=\"hideCircles()\">\n            <svg:g ngx-charts-tooltip-area\n              [dims]=\"dims\"\n              [xSet]=\"xSet\"\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [results]=\"results\"\n              [colors]=\"colors\"\n              [hiddenEntries]=\"hiddenEntries\"\n              [tooltipDisabled]=\"tooltipDisabled\"\n              [tooltipTemplate]=\"seriesTooltipTemplate\"\n              (hover)=\"updateHoveredVertical($event)\"\n            />\n\n            <svg:g *ngFor=\"let series of results\">\n              <svg:g *ngIf=\"!isHidden(series)\">\n                <svg:g ngx-charts-circle-series\n                  [xScale]=\"xScale\"\n                  [yScale]=\"yScale\"\n                  [colors]=\"colors\"\n                  [data]=\"series\"\n                  [scaleType]=\"scaleType\"\n                  [visibleValue]=\"hoveredVertical\"\n                  [activeEntries]=\"activeEntries\"\n                  [tooltipDisabled]=\"tooltipDisabled\"\n                  [tooltipTemplate]=\"tooltipTemplate\"\n                  (select)=\"onSeriesClick($event, series)\"\n                  (activate)=\"onActivate($event)\"\n                  (deactivate)=\"onDeactivate($event)\"\n                />\n              </svg:g>\n            </svg:g>\n          </svg:g>\n        </svg:g>\n      </svg:g>\n      <svg:g ngx-charts-timeline\n        *ngIf=\"timeline && scaleType != 'ordinal'\"\n        [attr.transform]=\"timelineTransform\"\n        [results]=\"results\"\n        [view]=\"[timelineWidth, height]\"\n        [height]=\"timelineHeight\"\n        [scheme]=\"scheme\"\n        [customColors]=\"customColors\"\n        [scaleType]=\"scaleType\"\n        [hiddenEntries]=\"hiddenEntries\"\n        [legend]=\"legend\"\n        (onDomainChange)=\"updateDomain($event)\">\n        <svg:g *ngFor=\"let series of results; trackBy:trackBy\">\n          <svg:g *ngIf=\"!isHidden(series)\">\n            <svg:g ngx-charts-line-series\n              [xScale]=\"timelineXScale\"\n              [yScale]=\"timelineYScale\"\n              [colors]=\"colors\"\n              [data]=\"series\"\n              [scaleType]=\"scaleType\"\n              [curve]=\"curve\"\n              [hasRange]=\"hasRange\"\n              [animations]=\"animations\"\n            />\n          </svg:g>\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
             styleUrls: ['../common/base-chart.component.css'],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush,
