@@ -15,11 +15,11 @@ import {
       tabindex="-1"
       class="legend-label-box"
       [class.active]="isActive"
-      [class.hiddenSeries]="isHidden"
-      (click)="onClick($event)">
+      (click)="select.emit(formattedLabel)">
       <span
         class="legend-label-color"
-        [style.background-color]="color">
+        [style.background-color]="color"
+        (click)="toggle.emit(formattedLabel)">
       </span>
       <span class="legend-label-text">
         {{trimmedLabel}}
@@ -34,7 +34,6 @@ export class LegendEntryComponent {
   @Input() label: any;
   @Input() formattedLabel: string;
   @Input() isActive: boolean = false;
-  @Input() isHidden: boolean = false;
 
   @Output() select: EventEmitter<any> = new EventEmitter();
   @Output() activate: EventEmitter<any> = new EventEmitter();
@@ -55,8 +54,4 @@ export class LegendEntryComponent {
     this.deactivate.emit({name: this.label});
   }
 
-  onClick($event): void {
-    this.select.emit(this.formattedLabel);
-    this.toggle.emit({name: this.label});
-  }
 }

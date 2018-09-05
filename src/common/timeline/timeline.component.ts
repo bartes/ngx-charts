@@ -6,7 +6,7 @@ import {
 import { brushX } from 'd3-brush';
 import { scaleLinear, scaleTime, scalePoint } from 'd3-scale';
 import { select, event as d3event } from 'd3-selection';
-import { isRelatedEntry } from '../domain.helper';
+
 import { id } from '../../utils';
 
 @Component({
@@ -49,8 +49,6 @@ export class Timeline implements OnChanges {
   @Input() scaleType;
   @Input() height: number = 50;
 
-  @Input() hiddenEntries: any[];
-
   @Output() select = new EventEmitter();
   @Output() onDomainChange = new EventEmitter();
 
@@ -68,10 +66,6 @@ export class Timeline implements OnChanges {
     element: ElementRef,
     private cd: ChangeDetectorRef) {
       this.element = element.nativeElement;
-  }
-
-  isHidden(entry): boolean {
-    return isRelatedEntry(this.hiddenEntries, entry.name);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -107,9 +101,6 @@ export class Timeline implements OnChanges {
     let values = [];
 
     for (const results of this.results) {
-      if (this.isHidden({ name: results.name })) {
-        continue;
-      }
       for (const d of results.series) {
         if (!values.includes(d.name)) {
           values.push(d.name);
