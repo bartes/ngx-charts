@@ -45,6 +45,15 @@ import { isRelatedEntry } from './domain.helper';
         </xhtml:div>
       </xhtml:ng-template>
       <svg:rect
+        class="tooltip-anchor"
+        [attr.x]="syncedHoveredVertical.position"
+        y="0"
+        [attr.width]="1"
+        [attr.height]="dims.height"
+        [style.pointer-events]="'none'"
+        *ngIf="syncedHoveredVertical && anchorOpacity == 0"
+      />
+      <svg:rect
         #tooltipAnchor
         [@animationState]="anchorOpacity !== 0 ? 'active' : 'inactive'"
         class="tooltip-anchor"
@@ -101,6 +110,7 @@ export class TooltipArea {
 
   @Input() hiddenEntries: any[];
 
+  @Input() syncedHoveredVertical: any;
   @Output() hover = new EventEmitter();
 
   @ViewChild('tooltipAnchor') tooltipAnchor;
@@ -170,6 +180,7 @@ export class TooltipArea {
       this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [ev]);
       this.anchorOpacity = 0.7;
       this.hover.emit({
+        position: this.anchorPos,
         value: closestPoint
       });
       this.showTooltip();

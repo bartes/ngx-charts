@@ -100,6 +100,7 @@ import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper'
               [hiddenEntries]="hiddenEntries"
               [tooltipDisabled]="tooltipDisabled"
               [tooltipTemplate]="seriesTooltipTemplate"
+              [syncedHoveredVertical]="syncedHoveredVertical"
               (hover)="updateHoveredVertical($event)"
             />
 
@@ -203,12 +204,15 @@ export class LineChartComponent extends BaseChartComponent {
   @Input() xScaleMax: any;
   @Input() yScaleMin: number;
   @Input() yScaleMax: number;
+  @Input() syncedHoveredVertical: any;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
 
   @Output() showSeries: EventEmitter<any> = new EventEmitter();
   @Output() hideSeries: EventEmitter<any> = new EventEmitter();
+
+  @Output() hoveredVerticalDone: EventEmitter<any> = new EventEmitter();
 
   @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
   @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
@@ -462,12 +466,14 @@ export class LineChartComponent extends BaseChartComponent {
 
   updateHoveredVertical(item): void {
     this.hoveredVertical = item.value;
+    this.hoveredVerticalDone.emit(item);
     this.deactivateAll();
   }
 
   @HostListener('mouseleave')
   hideCircles(): void {
     this.hoveredVertical = null;
+    this.hoveredVerticalDone.emit(null);
     this.deactivateAll();
   }
 
