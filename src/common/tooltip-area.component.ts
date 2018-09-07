@@ -45,6 +45,15 @@ import { isRelatedEntry } from './domain.helper';
         </xhtml:div>
       </xhtml:ng-template>
       <svg:rect
+        class="tooltip-anchor"
+        [attr.x]="calculateAnchor(syncedHoveredVertical)"
+        y="0"
+        [attr.width]="1"
+        [attr.height]="dims.height"
+        [style.pointer-events]="'none'"
+        *ngIf="syncedHoveredVertical && anchorOpacity == 0"
+      />
+      <svg:rect
         #tooltipAnchor
         [@animationState]="anchorOpacity !== 0 ? 'active' : 'inactive'"
         class="tooltip-anchor"
@@ -101,6 +110,7 @@ export class TooltipArea {
 
   @Input() hiddenEntries: any[];
 
+  @Input() syncedHoveredVertical: any;
   @Output() hover = new EventEmitter();
 
   @ViewChild('tooltipAnchor') tooltipAnchor;
@@ -155,6 +165,16 @@ export class TooltipArea {
     return results;
   }
 
+  calculateAnchor(data) {
+    const position = data.position * this.dims.width / data.width;
+    const closestIndex = this.findClosestPointIndex(position);
+    const closestPoint = this.xSet[closestIndex];
+    let anchorPos = this.xScale(closestPoint);
+    anchorPos = Math.max(0, anchorPos);
+    anchorPos = Math.min(this.dims.width, anchorPos);
+    return anchorPos;
+  }
+
   mouseMove(event) {
     const xPos = event.pageX - event.target.getBoundingClientRect().left;
 
@@ -170,6 +190,8 @@ export class TooltipArea {
       this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [ev]);
       this.anchorOpacity = 0.7;
       this.hover.emit({
+        position: xPos,
+        width: this.dims.width,
         value: closestPoint
       });
       this.showTooltip();
