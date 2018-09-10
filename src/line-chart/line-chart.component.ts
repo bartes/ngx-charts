@@ -205,6 +205,7 @@ export class LineChartComponent extends BaseChartComponent {
   @Input() yScaleMin: number;
   @Input() yScaleMax: number;
   @Input() syncedHoveredVertical: any;
+  @Input() definedYAxisWidth: number;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
@@ -544,7 +545,7 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   updateYAxisWidth({ width }): void {
-    this.yAxisWidth = width;
+    this.yAxisWidth = this.definedYAxisWidth || width;
     this.update();
   }
 
