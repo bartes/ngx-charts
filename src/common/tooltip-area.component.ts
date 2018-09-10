@@ -46,7 +46,7 @@ import { isRelatedEntry } from './domain.helper';
       </xhtml:ng-template>
       <svg:rect
         class="tooltip-anchor"
-        [attr.x]="syncedHoveredVertical.position"
+        [attr.x]="calculateAnchor(syncedHoveredVertical.xPos)"
         y="0"
         [attr.width]="1"
         [attr.height]="dims.height"
@@ -165,6 +165,15 @@ export class TooltipArea {
     return results;
   }
 
+  calculateAnchor(xPos) {
+    const closestIndex = this.findClosestPointIndex(xPos);
+    const closestPoint = this.xSet[closestIndex];
+    let anchorPos = this.xScale(closestPoint);
+    anchorPos = Math.max(0, anchorPos);
+    anchorPos = Math.min(this.dims.width, anchorPos);
+    return anchorPos;
+  }
+
   mouseMove(event) {
     const xPos = event.pageX - event.target.getBoundingClientRect().left;
 
@@ -181,6 +190,7 @@ export class TooltipArea {
       this.anchorOpacity = 0.7;
       this.hover.emit({
         position: this.anchorPos,
+        xPos: xPos,
         value: closestPoint
       });
       this.showTooltip();
