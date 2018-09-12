@@ -495,7 +495,9 @@ export class LineChartComponent extends BaseChartComponent {
     if (idx > -1) {
       this.hiddenEntries = [...this.hiddenEntries.slice(0, idx), ...this.hiddenEntries.slice(idx + 1)];
       this.hideSeries.emit({ value: item, entries: this.hiddenEntries });
+      this.onActivate(item);
     } else {
+      this.onDeactivate(item);
       this.hiddenEntries = [ item, ...this.hiddenEntries ];
       this.showSeries.emit({ value: item, entries: this.hiddenEntries });
     }
@@ -555,6 +557,9 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   onActivate(item) {
+    if (this.isHidden(item)) {
+      return;
+    }
     this.deactivateAll();
 
     const idx = this.activeEntries.findIndex(d => {
@@ -569,6 +574,9 @@ export class LineChartComponent extends BaseChartComponent {
   }
 
   onDeactivate(item) {
+    if (this.isHidden(item)) {
+      return;
+    }
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value;
     });
