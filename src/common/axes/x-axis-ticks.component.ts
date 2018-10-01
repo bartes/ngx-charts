@@ -54,6 +54,8 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   @Input() showGridLines = false;
   @Input() gridLineHeight;
   @Input() width;
+  @Input() tickScaledWidth = 100;
+  @Input() tickWidth = 20;
 
   @Output() dimensionsChanged = new EventEmitter();
 
@@ -157,8 +159,8 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
 
   getTicks() {
     let ticks;
-    const maxTicks = this.getMaxTicks(20);
-    const maxScaleTicks = this.getMaxTicks(100);
+    const maxTicks = this.getMaxTicks(this.tickWidth);
+    const maxScaleTicks = this.getMaxTicks(this.tickScaledWidth);
 
     if (this.tickValues) {
       ticks = this.tickValues;

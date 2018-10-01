@@ -27,6 +27,7 @@ import { XAxisTicksComponent } from './x-axis-ticks.component';
         [showGridLines]="showGridLines"
         [gridLineHeight]="dims.height"
         [width]="dims.width"
+        [tickWidth]="tickWidth"
         [tickValues]="ticks"
         (dimensionsChanged)="emitTicksHeight($event)"
       />
@@ -56,6 +57,7 @@ export class XAxisComponent implements OnChanges {
   @Input() xAxisTickCount: any;
   @Input() xOrient: string = 'bottom';
   @Input() xAxisOffset: number = 0;
+  @Input() tickWidth;
 
   @Output() dimensionsChanged = new EventEmitter();
 
