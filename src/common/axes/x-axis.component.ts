@@ -45,6 +45,7 @@ import { XAxisTicksComponent } from './x-axis-ticks.component';
 export class XAxisComponent implements OnChanges {
 
   @Input() xScale;
+  @Input() xAxisPositionReversed = false;
   @Input() dims;
   @Input() tickFormatting;
   @Input() showGridLines = false;
@@ -76,7 +77,8 @@ export class XAxisComponent implements OnChanges {
   }
 
   update(): void {
-    this.transform = `translate(0,${this.xAxisOffset + this.padding + this.dims.height})`;
+    const calculatedOffset = this.xAxisPositionReversed ? this.xAxisOffset  + this.padding : this.xAxisOffset  + this.padding + this.dims.height;
+    this.transform = `translate(0,${calculatedOffset})`;
 
     if (typeof this.xAxisTickCount !== 'undefined') {
       this.tickArguments = [this.xAxisTickCount];

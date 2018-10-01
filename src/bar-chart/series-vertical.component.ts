@@ -30,7 +30,7 @@ export enum D0Types {
       [width]="bar.width"
       [height]="bar.height"
       [x]="bar.x"
-      [y]="bar.y"
+      [y]="bar.y + dims.yOffset"
       [fill]="bar.color"
       [stops]="bar.gradientStops"
       [data]="bar.data"

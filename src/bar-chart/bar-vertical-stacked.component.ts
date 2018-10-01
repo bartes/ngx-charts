@@ -37,6 +37,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           *ngIf="xAxis"
           [xScale]="xScale"
           [dims]="dims"
+          [xAxisPositionReversed]="xAxisPositionReversed"
           [showLabel]="showXAxisLabel"
           [labelText]="xAxisLabel"
           [tickFormatting]="xAxisTickFormatting"
@@ -99,11 +100,11 @@ import { BaseChartComponent } from '../common/base-chart.component';
   ]
 })
 export class BarVerticalStackedComponent extends BaseChartComponent {
-
   @Input() legend = false;
   @Input() legendTitle: string = 'Legend';
   @Input() legendPosition: string = 'right';
   @Input() xAxis;
+  @Input() xAxisPositionReversed = false;
   @Input() yAxis;
   @Input() showXAxisLabel;
   @Input() showYAxisLabel;
@@ -164,7 +165,8 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
       showYLabel: this.showYAxisLabel,
       showLegend: this.legend,
       legendType: this.schemeType,
-      legendPosition: this.legendPosition
+      legendPosition: this.legendPosition,
+      xAxisPositionReversed: this.xAxisPositionReversed,
     });
 
     if (this.showDataLabel) {
