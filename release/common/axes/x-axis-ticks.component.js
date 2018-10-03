@@ -15,6 +15,8 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.tickArguments = [5];
         this.tickStroke = '#ccc';
         this.showGridLines = false;
+        this.tickScaledWidth = 100;
+        this.tickWidth = 20;
         this.dimensionsChanged = new EventEmitter();
         this.verticalSpacing = 20;
         this.rotateLabels = false;
@@ -98,8 +100,8 @@ var XAxisTicksComponent = /** @class */ (function () {
     };
     XAxisTicksComponent.prototype.getTicks = function () {
         var ticks;
-        var maxTicks = this.getMaxTicks(20);
-        var maxScaleTicks = this.getMaxTicks(100);
+        var maxTicks = this.getMaxTicks(this.tickWidth);
+        var maxScaleTicks = this.getMaxTicks(this.tickScaledWidth);
         if (this.tickValues) {
             ticks = this.tickValues;
         }
@@ -157,6 +159,14 @@ var XAxisTicksComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "width", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickScaledWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickWidth", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
