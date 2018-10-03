@@ -7,6 +7,7 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     legendTitle: string;
     legendPosition: string;
     xAxis: any;
+    xAxisPositionReversed: boolean;
     yAxis: any;
     showXAxisLabel: any;
     showYAxisLabel: any;
@@ -26,6 +27,7 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     yScaleMax: number;
     showDataLabel: boolean;
     dataLabelFormatting: any;
+    xAxisTickMax: number;
     activate: EventEmitter<any>;
     deactivate: EventEmitter<any>;
     tooltipTemplate: TemplateRef<any>;
