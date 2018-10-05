@@ -20,6 +20,7 @@ export class BaseChartComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() schemeType: string = 'ordinal';
   @Input() customColors: any;
   @Input() animations: boolean = true;
+  @Input() dateFormatter = (dateName) => dateName.toLocaleDateString()
 
   @Output() select = new EventEmitter();
 
@@ -126,14 +127,14 @@ export class BaseChartComponent implements OnChanges, AfterViewInit, OnDestroy {
       const g = this.results[i];
 
       if (g.name instanceof Date) {
-        g.name = g.name.toLocaleDateString();
+        g.name = this.dateFormatter(g.name);
       }
 
       if (g.series) {
         for (let j = 0; j < g.series.length; j++) {
           const d = g.series[j];
           if (d.name instanceof Date) {
-            d.name = d.name.toLocaleDateString();
+            d.name = this.dateFormatter(d.name);
           }
         }
       }
