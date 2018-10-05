@@ -34,9 +34,14 @@ var SeriesVerticalComponent = /** @class */ (function () {
         var _this = this;
         this.updateTooltipSettings();
         var width;
+        var widthPadding = 0;
         if (this.series.length) {
             width = this.xScale.bandwidth();
+            if (this.maxWidth) {
+                widthPadding = Math.round(Math.max(width - this.maxWidth, 0) / 2);
+            }
         }
+        width = width - widthPadding * 2;
         var yScaleMin = Math.max(this.yScale.domain()[0], 0);
         var d0 = (_a = {},
             _a[D0Types.positive] = 0,
@@ -61,7 +66,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 width: width,
                 formattedLabel: formattedLabel,
                 height: 0,
-                x: 0,
+                x: widthPadding,
                 y: 0,
             };
             if (_this.type === 'standard') {
@@ -79,7 +84,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 var offset1 = offset0 + value;
                 d0[d0Type] += value;
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -97,7 +102,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                     offset1 = 0;
                 }
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -206,6 +211,10 @@ var SeriesVerticalComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], SeriesVerticalComponent.prototype, "colors", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Number)
+    ], SeriesVerticalComponent.prototype, "maxWidth", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Boolean)
