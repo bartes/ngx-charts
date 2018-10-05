@@ -83,6 +83,7 @@ export class SeriesVerticalComponent implements OnChanges {
   @Input() xScale;
   @Input() yScale;
   @Input() colors;
+  @Input() maxWidth: number;
   @Input() gradient: boolean;
   @Input() activeEntries: any[];
   @Input() seriesName: string;
@@ -114,9 +115,14 @@ export class SeriesVerticalComponent implements OnChanges {
   update(): void {
     this.updateTooltipSettings();
     let width;
+    let widthPadding = 0;
     if (this.series.length) {
       width = this.xScale.bandwidth();
+      if(this.maxWidth) {
+        widthPadding = Math.round(Math.max(width - this.maxWidth, 0) / 2);
+      }
     }
+    width = width - widthPadding * 2;
     const yScaleMin = Math.max(this.yScale.domain()[0], 0);
 
     const d0 = {
@@ -145,7 +151,7 @@ export class SeriesVerticalComponent implements OnChanges {
         width,
         formattedLabel,
         height: 0,
-        x: 0,
+        x: widthPadding,
         y: 0,
       };
 
@@ -164,7 +170,7 @@ export class SeriesVerticalComponent implements OnChanges {
         d0[d0Type] += value;
 
         bar.height = this.yScale(offset0) - this.yScale(offset1);
-        bar.x = 0;
+        bar.x = widthPadding;
         bar.y = this.yScale(offset1);
         bar.offset0 = offset0;
         bar.offset1 = offset1;
@@ -182,7 +188,7 @@ export class SeriesVerticalComponent implements OnChanges {
         }
 
         bar.height = this.yScale(offset0) - this.yScale(offset1);
-        bar.x = 0;
+        bar.x = widthPadding;
         bar.y = this.yScale(offset1);
         bar.offset0 = offset0;
         bar.offset1 = offset1;

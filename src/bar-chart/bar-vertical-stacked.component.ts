@@ -64,6 +64,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           <svg:g ngx-charts-series-vertical
             type="stacked"
             [xScale]="xScale"
+            [maxWidth]="barMaxWidth"
             [yScale]="yScale"
             [activeEntries]="activeEntries"
             [colors]="colors"
@@ -126,6 +127,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() showDataLabel: boolean = false;
   @Input() dataLabelFormatting: any;
   @Input() xAxisTickMax: number;
+  @Input() barMaxWidth: number;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
