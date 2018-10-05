@@ -10,6 +10,7 @@ export declare class BaseChartComponent implements OnChanges, AfterViewInit, OnD
     schemeType: string;
     customColors: any;
     animations: boolean;
+    dateFormatter: (dateName: any) => any;
     select: EventEmitter<{}>;
     width: number;
     height: number;

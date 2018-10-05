@@ -19,6 +19,7 @@ var BaseChartComponent = /** @class */ (function () {
         this.scheme = 'cool';
         this.schemeType = 'ordinal';
         this.animations = true;
+        this.dateFormatter = function (dateName) { return dateName.toLocaleDateString(); };
         this.select = new EventEmitter();
     }
     BaseChartComponent.prototype.ngAfterViewInit = function () {
@@ -99,13 +100,13 @@ var BaseChartComponent = /** @class */ (function () {
         for (var i = 0; i < this.results.length; i++) {
             var g = this.results[i];
             if (g.name instanceof Date) {
-                g.name = g.name.toLocaleDateString();
+                g.name = this.dateFormatter(g.name);
             }
             if (g.series) {
                 for (var j = 0; j < g.series.length; j++) {
                     var d = g.series[j];
                     if (d.name instanceof Date) {
-                        d.name = d.name.toLocaleDateString();
+                        d.name = this.dateFormatter(d.name);
                     }
                 }
             }
@@ -185,6 +186,10 @@ var BaseChartComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], BaseChartComponent.prototype, "animations", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BaseChartComponent.prototype, "dateFormatter", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
