@@ -147,6 +147,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   legendOptions: any;
+  chartMargin: any;
   dataLabelMaxHeight: any = {negative: 0, positive: 0};
 
   update(): void {
@@ -155,12 +156,12 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
     if (!this.showDataLabel) {
       this.dataLabelMaxHeight = {negative: 0, positive: 0};
     }
-    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20];
+    this.chartMargin = [this.margin[0] + this.dataLabelMaxHeight.positive, this.margin[1], this.margin[2] + this.dataLabelMaxHeight.negative, this.margin[3]];
 
     this.dims = calculateViewDimensions({
       width: this.width,
       height: this.height,
-      margins: this.margin,
+      margins: this.chartMargin,
       showXAxis: this.xAxis,
       showYAxis: this.yAxis,
       xAxisHeight: this.xAxisHeight,
@@ -188,7 +189,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
 
     this.setColors();
     this.legendOptions = this.getLegendOptions();
-    this.transform = `translate(${ this.dims.xOffset } , ${ this.margin[0] + this.dataLabelMaxHeight.negative})`;
+    this.transform = `translate(${ this.dims.xOffset } , ${ this.chartMargin[0] + this.dataLabelMaxHeight.negative})`;
   }
 
   getGroupDomain() {
