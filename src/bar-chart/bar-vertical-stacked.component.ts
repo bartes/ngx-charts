@@ -37,6 +37,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           *ngIf="xAxis"
           [xScale]="xScale"
           [dims]="dims"
+          [showGridLines]="xShowGridLines"
           [xAxisPositionReversed]="xAxisPositionReversed"
           [showLabel]="showXAxisLabel"
           [labelText]="xAxisLabel"
@@ -50,7 +51,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           *ngIf="yAxis"
           [yScale]="yScale"
           [dims]="dims"
-          [showGridLines]="showGridLines"
+          [showGridLines]="yShowGridLines"
           [showLabel]="showYAxisLabel"
           [labelText]="yAxisLabel"
           [tickFormatting]="yAxisTickFormatting"
@@ -114,7 +115,8 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() yAxisLabel;
   @Input() tooltipDisabled: boolean = false;
   @Input() gradient: boolean;
-  @Input() showGridLines: boolean = true;
+  @Input() xShowGridLines: boolean = false;
+  @Input() yShowGridLines: boolean = true;
   @Input() activeEntries: any[] = [];
   @Input() schemeType: string;
   @Input() xAxisTickFormatting: any;
