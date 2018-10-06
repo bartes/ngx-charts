@@ -15,7 +15,8 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     yAxisLabel: any;
     tooltipDisabled: boolean;
     gradient: boolean;
-    showGridLines: boolean;
+    xShowGridLines: boolean;
+    yShowGridLines: boolean;
     activeEntries: any[];
     schemeType: string;
     xAxisTickFormatting: any;
