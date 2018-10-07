@@ -77,7 +77,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
             [showDataLabel]="showDataLabel"
             [dataLabelFormatting]="dataLabelFormatting"
             [seriesName]="group.name"
-            [animations]="animations"
+            [animations]="barAnimations"
             (select)="onClick($event, group)"
             (activate)="onActivate($event, group)"
             (deactivate)="onDeactivate($event, group)"
@@ -130,6 +130,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() dataLabelFormatting: any;
   @Input() xAxisTickMax: number;
   @Input() barMaxWidth: number;
+  @Input() barAnimations = true;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
