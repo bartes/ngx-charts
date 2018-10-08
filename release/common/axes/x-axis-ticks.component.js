@@ -15,6 +15,9 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.tickArguments = [5];
         this.tickStroke = '#ccc';
         this.showGridLines = false;
+        this.tickScaledWidth = 100;
+        this.tickWidth = 20;
+        this.xAxisPositionReversed = false;
         this.dimensionsChanged = new EventEmitter();
         this.verticalSpacing = 20;
         this.rotateLabels = false;
@@ -25,6 +28,8 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.maxTicksLength = 0;
         this.maxAllowedLength = 16;
         this.height = 0;
+        this.gridLineY1 = 0;
+        this.gridLineY2 = 0;
         this.trimLabel = trimLabel;
     }
     XAxisTicksComponent.prototype.ngOnChanges = function (changes) {
@@ -37,10 +42,21 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent.prototype.updateDims = function () {
         var _this = this;
         var height = parseInt(this.ticksElement.nativeElement.getBoundingClientRect().height, 10);
+        this.updateGridLines(height);
         if (height !== this.height) {
             this.height = height;
             this.dimensionsChanged.emit({ height: height });
             setTimeout(function () { return _this.updateDims(); });
+        }
+    };
+    XAxisTicksComponent.prototype.updateGridLines = function (height) {
+        if (this.xAxisPositionReversed) {
+            this.gridLineY1 = height;
+            this.gridLineY2 = height + this.gridLineHeight - 10;
+        }
+        else {
+            this.gridLineY1 = -this.gridLineHeight;
+            this.gridLineY2 = 0;
         }
     };
     XAxisTicksComponent.prototype.update = function () {
@@ -98,8 +114,8 @@ var XAxisTicksComponent = /** @class */ (function () {
     };
     XAxisTicksComponent.prototype.getTicks = function () {
         var ticks;
-        var maxTicks = this.getMaxTicks(20);
-        var maxScaleTicks = this.getMaxTicks(100);
+        var maxTicks = this.getMaxTicks(this.tickWidth);
+        var maxScaleTicks = this.getMaxTicks(this.tickScaledWidth);
         if (this.tickValues) {
             ticks = this.tickValues;
         }
@@ -119,7 +135,12 @@ var XAxisTicksComponent = /** @class */ (function () {
         return 'translate(' + this.adjustedScale(tick) + ',' + this.verticalSpacing + ')';
     };
     XAxisTicksComponent.prototype.gridLineTransform = function () {
-        return "translate(0," + (-this.verticalSpacing - 5) + ")";
+        if (this.xAxisPositionReversed) {
+            return 'translate(0, 0)';
+        }
+        else {
+            return "translate(0," + (-this.verticalSpacing - 5) + ")";
+        }
     };
     __decorate([
         Input(),
@@ -158,6 +179,18 @@ var XAxisTicksComponent = /** @class */ (function () {
         __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "width", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickScaledWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], XAxisTicksComponent.prototype, "xAxisPositionReversed", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "dimensionsChanged", void 0);
@@ -168,7 +201,7 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-x-axis-ticks]',
-            template: "\n    <svg:g #ticksel>\n      <svg:g *ngFor=\"let tick of ticks\" class=\"tick\"\n        [attr.transform]=\"tickTransform(tick)\">\n        <title>{{tickFormat(tick)}}</title>\n        <svg:text\n          stroke-width=\"0.01\"\n          [attr.text-anchor]=\"textAnchor\"\n          [attr.transform]=\"textTransform\"\n          [style.font-size]=\"'12px'\">\n          {{trimLabel(tickFormat(tick))}}\n        </svg:text>\n      </svg:g>\n    </svg:g>\n\n    <svg:g *ngFor=\"let tick of ticks\"\n      [attr.transform]=\"tickTransform(tick)\">\n      <svg:g *ngIf=\"showGridLines\"\n        [attr.transform]=\"gridLineTransform()\">\n        <svg:line\n          class=\"gridline-path gridline-path-vertical\"\n          [attr.y1]=\"-gridLineHeight\"\n          y2=\"0\" />\n      </svg:g>\n    </svg:g>\n  ",
+            template: "\n    <svg:g #ticksel>\n      <svg:g *ngFor=\"let tick of ticks\" class=\"tick\"\n        [attr.transform]=\"tickTransform(tick)\">\n        <title>{{tickFormat(tick)}}</title>\n        <svg:text\n          stroke-width=\"0.01\"\n          [attr.text-anchor]=\"textAnchor\"\n          [attr.transform]=\"textTransform\"\n          [style.font-size]=\"'12px'\">\n          {{trimLabel(tickFormat(tick))}}\n        </svg:text>\n      </svg:g>\n    </svg:g>\n\n    <svg:g *ngFor=\"let tick of ticks\"\n      [attr.transform]=\"tickTransform(tick)\">\n      <svg:g *ngIf=\"showGridLines\"\n        [attr.transform]=\"gridLineTransform()\">\n        <svg:line\n          class=\"gridline-path gridline-path-vertical\"\n          [attr.y1]=\"gridLineY1\"\n          [attr.y2]=\"gridLineY2\"\n        />\n      </svg:g>\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush
         }),
         __metadata("design:paramtypes", [])

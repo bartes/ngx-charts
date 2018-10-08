@@ -25,8 +25,10 @@ import { XAxisTicksComponent } from './x-axis-ticks.component';
         [scale]="xScale"
         [orient]="xOrient"
         [showGridLines]="showGridLines"
+        [xAxisPositionReversed]="xAxisPositionReversed"
         [gridLineHeight]="dims.height"
         [width]="dims.width"
+        [tickWidth]="tickWidth"
         [tickValues]="ticks"
         (dimensionsChanged)="emitTicksHeight($event)"
       />
@@ -45,6 +47,7 @@ import { XAxisTicksComponent } from './x-axis-ticks.component';
 export class XAxisComponent implements OnChanges {
 
   @Input() xScale;
+  @Input() xAxisPositionReversed = false;
   @Input() dims;
   @Input() tickFormatting;
   @Input() showGridLines = false;
@@ -55,6 +58,7 @@ export class XAxisComponent implements OnChanges {
   @Input() xAxisTickCount: any;
   @Input() xOrient: string = 'bottom';
   @Input() xAxisOffset: number = 0;
+  @Input() tickWidth;
 
   @Output() dimensionsChanged = new EventEmitter();
 
@@ -76,7 +80,8 @@ export class XAxisComponent implements OnChanges {
   }
 
   update(): void {
-    this.transform = `translate(0,${this.xAxisOffset + this.padding + this.dims.height})`;
+    const calculatedOffset = this.xAxisPositionReversed ? this.xAxisOffset  + this.padding : this.xAxisOffset  + this.padding + this.dims.height;
+    this.transform = `translate(0,${calculatedOffset})`;
 
     if (typeof this.xAxisTickCount !== 'undefined') {
       this.tickArguments = [this.xAxisTickCount];

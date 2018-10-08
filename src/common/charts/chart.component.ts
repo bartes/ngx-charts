@@ -28,6 +28,7 @@ import { TooltipService } from '../tooltip';
       <ngx-charts-scale-legend
         *ngIf="showLegend && legendType === 'scaleLegend'"
         class="chart-legend"
+        [horizontal]="legendOptions && legendOptions.position === 'below'"
         [valueRange]="legendOptions.domain"
         [colors]="legendOptions.colors"
         [height]="view[1]"
@@ -36,13 +37,16 @@ import { TooltipService } from '../tooltip';
       <ngx-charts-legend
         *ngIf="showLegend && legendType === 'legend'"
         class="chart-legend"
+        [horizontal]="legendOptions && legendOptions.position === 'below'"
         [data]="legendOptions.domain"
         [title]="legendOptions.title"
         [colors]="legendOptions.colors"
         [height]="view[1]"
         [width]="legendWidth"
         [activeEntries]="activeEntries"
+        [hiddenEntries]="hiddenEntries"
         (labelClick)="legendLabelClick.emit($event)"
+        (labelToggle)="legendLabelToggle.emit($event)"
         (labelActivate)="legendLabelActivate.emit($event)"
         (labelDeactivate)="legendLabelDeactivate.emit($event)">
       </ngx-charts-legend>
@@ -70,9 +74,11 @@ export class ChartComponent implements OnChanges {
   @Input() legendType: any;
   @Input() colors: any;
   @Input() activeEntries: any[];
+  @Input() hiddenEntries: any[];
   @Input() animations: boolean = true;
 
   @Output() legendLabelClick: EventEmitter<any> = new EventEmitter();
+  @Output() legendLabelToggle: EventEmitter<any> = new EventEmitter();
   @Output() legendLabelActivate: EventEmitter<any> = new EventEmitter();
   @Output() legendLabelDeactivate: EventEmitter<any> = new EventEmitter();
 
@@ -95,17 +101,21 @@ export class ChartComponent implements OnChanges {
     if (this.showLegend) {
       this.legendType = this.getLegendType();
 
-      if (this.legendType === 'scaleLegend') {
-        legendColumns = 1;
-      } else {
-        legendColumns = 2;
+      if (!this.legendOptions || this.legendOptions.position === 'right') {
+        if (this.legendType === 'scaleLegend') {
+          legendColumns = 1;
+        } else {
+          legendColumns = 2;
+        }
       }
     }
 
     const chartColumns = 12 - legendColumns;
 
     this.chartWidth = ~~(this.view[0] * chartColumns / 12.0);
-    this.legendWidth = ~~(this.view[0] * legendColumns / 12.0);
+    this.legendWidth = (!this.legendOptions || this.legendOptions.position === 'right')
+      ? ~~(this.view[0] * legendColumns / 12.0)
+      : this.chartWidth;
   }
 
   getLegendType(): string {

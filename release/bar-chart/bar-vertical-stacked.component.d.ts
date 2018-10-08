@@ -5,7 +5,9 @@ import { BaseChartComponent } from '../common/base-chart.component';
 export declare class BarVerticalStackedComponent extends BaseChartComponent {
     legend: boolean;
     legendTitle: string;
+    legendPosition: string;
     xAxis: any;
+    xAxisPositionReversed: boolean;
     yAxis: any;
     showXAxisLabel: any;
     showYAxisLabel: any;
@@ -13,7 +15,8 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     yAxisLabel: any;
     tooltipDisabled: boolean;
     gradient: boolean;
-    showGridLines: boolean;
+    xShowGridLines: boolean;
+    yShowGridLines: boolean;
     activeEntries: any[];
     schemeType: string;
     xAxisTickFormatting: any;
@@ -25,6 +28,9 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     yScaleMax: number;
     showDataLabel: boolean;
     dataLabelFormatting: any;
+    xAxisTickMax: number;
+    barMaxWidth: number;
+    barAnimations: boolean;
     activate: EventEmitter<any>;
     deactivate: EventEmitter<any>;
     tooltipTemplate: TemplateRef<any>;
@@ -41,6 +47,7 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
     xAxisHeight: number;
     yAxisWidth: number;
     legendOptions: any;
+    chartMargin: any;
     dataLabelMaxHeight: any;
     update(): void;
     getGroupDomain(): any[];
@@ -58,6 +65,7 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
         colors: any;
         domain: any[];
         title: any;
+        position: string;
     };
     updateYAxisWidth({width}: {
         width: any;

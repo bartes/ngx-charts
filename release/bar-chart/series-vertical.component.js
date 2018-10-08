@@ -34,9 +34,14 @@ var SeriesVerticalComponent = /** @class */ (function () {
         var _this = this;
         this.updateTooltipSettings();
         var width;
+        var widthPadding = 0;
         if (this.series.length) {
             width = this.xScale.bandwidth();
+            if (this.maxWidth) {
+                widthPadding = Math.round(Math.max(width - this.maxWidth, 0) / 2);
+            }
         }
+        width = width - widthPadding * 2;
         var yScaleMin = Math.max(this.yScale.domain()[0], 0);
         var d0 = (_a = {},
             _a[D0Types.positive] = 0,
@@ -61,7 +66,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 width: width,
                 formattedLabel: formattedLabel,
                 height: 0,
-                x: 0,
+                x: widthPadding,
                 y: 0,
             };
             if (_this.type === 'standard') {
@@ -79,7 +84,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 var offset1 = offset0 + value;
                 d0[d0Type] += value;
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -97,7 +102,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                     offset1 = 0;
                 }
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -208,6 +213,10 @@ var SeriesVerticalComponent = /** @class */ (function () {
     ], SeriesVerticalComponent.prototype, "colors", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Number)
+    ], SeriesVerticalComponent.prototype, "maxWidth", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Boolean)
     ], SeriesVerticalComponent.prototype, "gradient", void 0);
     __decorate([
@@ -261,7 +270,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
     SeriesVerticalComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-series-vertical]',
-            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
+            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y + dims.yOffset\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [

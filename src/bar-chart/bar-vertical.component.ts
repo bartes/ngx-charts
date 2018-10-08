@@ -80,6 +80,7 @@ export class BarVerticalComponent extends BaseChartComponent {
 
   @Input() legend = false;
   @Input() legendTitle: string = 'Legend';
+  @Input() legendPosition: string = 'right';
   @Input() xAxis;
   @Input() yAxis;
   @Input() showXAxisLabel;
@@ -115,7 +116,7 @@ export class BarVerticalComponent extends BaseChartComponent {
   yDomain: any;
   transform: string;
   colors: ColorHelper;
-  margin: any[] = [10, 20, 10, 20];
+  @Input() margin: any[] = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   legendOptions: any;
@@ -123,11 +124,11 @@ export class BarVerticalComponent extends BaseChartComponent {
 
   update(): void {
     super.update();
-   
+
     if (!this.showDataLabel) {
-      this.dataLabelMaxHeight = {negative: 0, positive: 0};          
+      this.dataLabelMaxHeight = {negative: 0, positive: 0};
     }
-    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20]; 
+    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20];
 
     this.dims = calculateViewDimensions({
       width: this.width,
@@ -140,7 +141,8 @@ export class BarVerticalComponent extends BaseChartComponent {
       showXLabel: this.showXAxisLabel,
       showYLabel: this.showYAxisLabel,
       showLegend: this.legend,
-      legendType: this.schemeType
+      legendType: this.schemeType,
+      legendPosition: this.legendPosition
     });
 
     if (this.showDataLabel) {
@@ -210,7 +212,8 @@ export class BarVerticalComponent extends BaseChartComponent {
       scaleType: this.schemeType,
       colors: undefined,
       domain: [],
-      title: undefined
+      title: undefined,
+      position: this.legendPosition
     };
     if (opts.scaleType === 'ordinal') {
       opts.domain = this.xDomain;

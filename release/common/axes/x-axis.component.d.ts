@@ -2,6 +2,7 @@ import { SimpleChanges, EventEmitter, OnChanges } from '@angular/core';
 import { XAxisTicksComponent } from './x-axis-ticks.component';
 export declare class XAxisComponent implements OnChanges {
     xScale: any;
+    xAxisPositionReversed: boolean;
     dims: any;
     tickFormatting: any;
     showGridLines: boolean;
@@ -12,6 +13,7 @@ export declare class XAxisComponent implements OnChanges {
     xAxisTickCount: any;
     xOrient: string;
     xAxisOffset: number;
+    tickWidth: any;
     dimensionsChanged: EventEmitter<{}>;
     xAxisClassName: string;
     tickArguments: any;

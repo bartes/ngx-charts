@@ -11,6 +11,7 @@ export declare class Timeline implements OnChanges {
     autoScale: any;
     scaleType: any;
     height: number;
+    hiddenEntries: any[];
     select: EventEmitter<{}>;
     onDomainChange: EventEmitter<{}>;
     element: HTMLElement;
@@ -23,6 +24,7 @@ export declare class Timeline implements OnChanges {
     filterId: any;
     filter: any;
     constructor(element: ElementRef, cd: ChangeDetectorRef);
+    isHidden(entry: any): boolean;
     ngOnChanges(changes: SimpleChanges): void;
     update(): void;
     getXDomain(): any[];

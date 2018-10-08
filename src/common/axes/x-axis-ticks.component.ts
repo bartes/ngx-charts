@@ -36,8 +36,9 @@ import { reduceTicks } from './ticks.helper';
         [attr.transform]="gridLineTransform()">
         <svg:line
           class="gridline-path gridline-path-vertical"
-          [attr.y1]="-gridLineHeight"
-          y2="0" />
+          [attr.y1]="gridLineY1"
+          [attr.y2]="gridLineY2"
+        />
       </svg:g>
     </svg:g>
   `,
@@ -54,6 +55,9 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   @Input() showGridLines = false;
   @Input() gridLineHeight;
   @Input() width;
+  @Input() tickScaledWidth = 100;
+  @Input() tickWidth = 20;
+  @Input() xAxisPositionReversed: boolean = false;
 
   @Output() dimensionsChanged = new EventEmitter();
 
@@ -72,6 +76,9 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   tickFormat: (o: any) => any;
   height: number = 0;
 
+  gridLineY1 = 0;
+  gridLineY2 = 0;
+
   @ViewChild('ticksel') ticksElement: ElementRef;
 
   constructor() {
@@ -88,6 +95,7 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
 
   updateDims(): void {
     const height = parseInt(this.ticksElement.nativeElement.getBoundingClientRect().height, 10);
+    this.updateGridLines(height);
     if (height !== this.height) {
       this.height = height;
       this.dimensionsChanged.emit({ height });
@@ -95,8 +103,19 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  updateGridLines(height) {
+    if(this.xAxisPositionReversed) {
+      this.gridLineY1 = height;
+      this.gridLineY2 = height + this.gridLineHeight - 10;
+    } else {
+      this.gridLineY1 = -this.gridLineHeight;
+      this.gridLineY2 = 0;
+    }
+  }
+
   update(): void {
     const scale = this.scale;
+
     this.ticks = this.getTicks();
 
     if (this.tickFormatting) {
@@ -157,8 +176,8 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
 
   getTicks() {
     let ticks;
-    const maxTicks = this.getMaxTicks(20);
-    const maxScaleTicks = this.getMaxTicks(100);
+    const maxTicks = this.getMaxTicks(this.tickWidth);
+    const maxScaleTicks = this.getMaxTicks(this.tickScaledWidth);
 
     if (this.tickValues) {
       ticks = this.tickValues;
@@ -181,7 +200,10 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   }
 
   gridLineTransform(): string {
-    return `translate(0,${-this.verticalSpacing - 5})`;
+    if(this.xAxisPositionReversed) {
+      return 'translate(0, 0)';
+    } else {
+      return `translate(0,${-this.verticalSpacing - 5})`;
+    }
   }
-
 }

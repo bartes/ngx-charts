@@ -37,10 +37,13 @@ import { BaseChartComponent } from '../common/base-chart.component';
           *ngIf="xAxis"
           [xScale]="xScale"
           [dims]="dims"
+          [showGridLines]="xShowGridLines"
+          [xAxisPositionReversed]="xAxisPositionReversed"
           [showLabel]="showXAxisLabel"
           [labelText]="xAxisLabel"
           [tickFormatting]="xAxisTickFormatting"
           [ticks]="xAxisTicks"
+          [tickWidth]="xAxisTickMax"
           [xAxisOffset]="dataLabelMaxHeight.negative"
           (dimensionsChanged)="updateXAxisHeight($event)">
         </svg:g>
@@ -48,7 +51,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           *ngIf="yAxis"
           [yScale]="yScale"
           [dims]="dims"
-          [showGridLines]="showGridLines"
+          [showGridLines]="yShowGridLines"
           [showLabel]="showYAxisLabel"
           [labelText]="yAxisLabel"
           [tickFormatting]="yAxisTickFormatting"
@@ -62,6 +65,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           <svg:g ngx-charts-series-vertical
             type="stacked"
             [xScale]="xScale"
+            [maxWidth]="barMaxWidth"
             [yScale]="yScale"
             [activeEntries]="activeEntries"
             [colors]="colors"
@@ -73,7 +77,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
             [showDataLabel]="showDataLabel"
             [dataLabelFormatting]="dataLabelFormatting"
             [seriesName]="group.name"
-            [animations]="animations"
+            [animations]="barAnimations"
             (select)="onClick($event, group)"
             (activate)="onActivate($event, group)"
             (deactivate)="onDeactivate($event, group)"
@@ -99,10 +103,11 @@ import { BaseChartComponent } from '../common/base-chart.component';
   ]
 })
 export class BarVerticalStackedComponent extends BaseChartComponent {
-
   @Input() legend = false;
   @Input() legendTitle: string = 'Legend';
+  @Input() legendPosition: string = 'right';
   @Input() xAxis;
+  @Input() xAxisPositionReversed = false;
   @Input() yAxis;
   @Input() showXAxisLabel;
   @Input() showYAxisLabel;
@@ -110,7 +115,8 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() yAxisLabel;
   @Input() tooltipDisabled: boolean = false;
   @Input() gradient: boolean;
-  @Input() showGridLines: boolean = true;
+  @Input() xShowGridLines: boolean = false;
+  @Input() yShowGridLines: boolean = true;
   @Input() activeEntries: any[] = [];
   @Input() schemeType: string;
   @Input() xAxisTickFormatting: any;
@@ -122,6 +128,9 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() yScaleMax: number;
   @Input() showDataLabel: boolean = false;
   @Input() dataLabelFormatting: any;
+  @Input() xAxisTickMax: number;
+  @Input() barMaxWidth: number;
+  @Input() barAnimations = true;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
@@ -137,24 +146,25 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   transform: string;
   tickFormatting: (label: string) => string;
   colors: ColorHelper;
-  margin = [10, 20, 10, 20];
+  @Input() margin = [10, 20, 10, 20];
   xAxisHeight: number = 0;
   yAxisWidth: number = 0;
   legendOptions: any;
+  chartMargin: any;
   dataLabelMaxHeight: any = {negative: 0, positive: 0};
 
   update(): void {
     super.update();
 
     if (!this.showDataLabel) {
-      this.dataLabelMaxHeight = {negative: 0, positive: 0};          
+      this.dataLabelMaxHeight = {negative: 0, positive: 0};
     }
-    this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20]; 
+    this.chartMargin = [this.margin[0] + this.dataLabelMaxHeight.positive, this.margin[1], this.margin[2] + this.dataLabelMaxHeight.negative, this.margin[3]];
 
     this.dims = calculateViewDimensions({
       width: this.width,
       height: this.height,
-      margins: this.margin,
+      margins: this.chartMargin,
       showXAxis: this.xAxis,
       showYAxis: this.yAxis,
       xAxisHeight: this.xAxisHeight,
@@ -162,7 +172,9 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
       showXLabel: this.showXAxisLabel,
       showYLabel: this.showYAxisLabel,
       showLegend: this.legend,
-      legendType: this.schemeType
+      legendType: this.schemeType,
+      legendPosition: this.legendPosition,
+      xAxisPositionReversed: this.xAxisPositionReversed,
     });
 
     if (this.showDataLabel) {
@@ -180,8 +192,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
 
     this.setColors();
     this.legendOptions = this.getLegendOptions();
-
-    this.transform = `translate(${ this.dims.xOffset } , ${ this.margin[0] + this.dataLabelMaxHeight.negative})`;
+    this.transform = `translate(${ this.dims.xOffset } , ${ this.chartMargin[0] + this.dataLabelMaxHeight.negative})`;
   }
 
   getGroupDomain() {
@@ -293,7 +304,8 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
       scaleType: this.schemeType,
       colors: undefined,
       domain: [],
-      title: undefined
+      title: undefined,
+      position: this.legendPosition
     };
     if (opts.scaleType === 'ordinal') {
       opts.domain = this.innerDomain;

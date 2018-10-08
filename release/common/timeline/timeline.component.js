@@ -11,6 +11,7 @@ import { Component, Input, Output, EventEmitter, ElementRef, ChangeDetectionStra
 import { brushX } from 'd3-brush';
 import { scaleLinear, scaleTime, scalePoint } from 'd3-scale';
 import { select, event as d3event } from 'd3-selection';
+import { isRelatedEntry } from '../domain.helper';
 import { id } from '../../utils';
 var Timeline = /** @class */ (function () {
     function Timeline(element, cd) {
@@ -21,6 +22,9 @@ var Timeline = /** @class */ (function () {
         this.initialized = false;
         this.element = element.nativeElement;
     }
+    Timeline.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     Timeline.prototype.ngOnChanges = function (changes) {
         this.update();
         if (!this.initialized) {
@@ -46,6 +50,9 @@ var Timeline = /** @class */ (function () {
         var values = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var results = _a[_i];
+            if (this.isHidden({ name: results.name })) {
+                continue;
+            }
             for (var _b = 0, _c = results.series; _b < _c.length; _b++) {
                 var d = _c[_b];
                 if (!values.includes(d.name)) {
@@ -172,6 +179,10 @@ var Timeline = /** @class */ (function () {
         Input(),
         __metadata("design:type", Number)
     ], Timeline.prototype, "height", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], Timeline.prototype, "hiddenEntries", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)

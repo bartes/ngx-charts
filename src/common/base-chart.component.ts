@@ -20,6 +20,7 @@ export class BaseChartComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input() schemeType: string = 'ordinal';
   @Input() customColors: any;
   @Input() animations: boolean = true;
+  @Input() dateFormatter = (dateName) => dateName.toLocaleDateString()
 
   @Output() select = new EventEmitter();
 
@@ -61,11 +62,20 @@ export class BaseChartComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.results =  [];
     }
 
+    const dims = (!this.view || this.view[0] === null || this.view[1] === null) ? this.getContainerDims() : undefined;
+
     if (this.view) {
       this.width = this.view[0];
       this.height = this.view[1];
+      if (dims) {
+        if (this.width === null) {
+          this.width = dims.width;
+        }
+        if (this.height === null) {
+          this.height = dims.height;
+        }
+      }
     } else {
-      const dims = this.getContainerDims();
       if (dims) {
         this.width = dims.width;
         this.height = dims.height;
@@ -117,14 +127,14 @@ export class BaseChartComponent implements OnChanges, AfterViewInit, OnDestroy {
       const g = this.results[i];
 
       if (g.name instanceof Date) {
-        g.name = g.name.toLocaleDateString();
+        g.name = this.dateFormatter(g.name);
       }
 
       if (g.series) {
         for (let j = 0; j < g.series.length; j++) {
           const d = g.series[j];
           if (d.name instanceof Date) {
-            d.name = d.name.toLocaleDateString();
+            d.name = this.dateFormatter(d.name);
           }
         }
       }
