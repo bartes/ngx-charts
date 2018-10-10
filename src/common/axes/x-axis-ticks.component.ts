@@ -54,6 +54,7 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   @Input() tickFormatting;
   @Input() showGridLines = false;
   @Input() gridLineHeight;
+  @Input() gridLineOffset = 0;
   @Input() width;
   @Input() tickScaledWidth = 100;
   @Input() tickWidth = 20;
@@ -106,7 +107,7 @@ export class XAxisTicksComponent implements OnChanges, AfterViewInit {
   updateGridLines(height) {
     if(this.xAxisPositionReversed) {
       this.gridLineY1 = height;
-      this.gridLineY2 = height + this.gridLineHeight - 10;
+      this.gridLineY2 = height + this.gridLineHeight + this.gridLineOffset - 40;
     } else {
       this.gridLineY1 = -this.gridLineHeight;
       this.gridLineY2 = 0;

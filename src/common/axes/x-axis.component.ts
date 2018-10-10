@@ -27,6 +27,7 @@ import { XAxisTicksComponent } from './x-axis-ticks.component';
         [showGridLines]="showGridLines"
         [xAxisPositionReversed]="xAxisPositionReversed"
         [gridLineHeight]="dims.height"
+        [gridLineOffset]="dims.yOffset"
         [width]="dims.width"
         [tickWidth]="tickWidth"
         [tickValues]="ticks"
