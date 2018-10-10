@@ -15,6 +15,7 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.tickArguments = [5];
         this.tickStroke = '#ccc';
         this.showGridLines = false;
+        this.gridLineOffset = 0;
         this.tickScaledWidth = 100;
         this.tickWidth = 20;
         this.xAxisPositionReversed = false;
@@ -52,7 +53,7 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent.prototype.updateGridLines = function (height) {
         if (this.xAxisPositionReversed) {
             this.gridLineY1 = height;
-            this.gridLineY2 = height + this.gridLineHeight - 10;
+            this.gridLineY2 = height + this.gridLineHeight + this.gridLineOffset - 40;
         }
         else {
             this.gridLineY1 = -this.gridLineHeight;
@@ -174,6 +175,10 @@ var XAxisTicksComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "gridLineHeight", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "gridLineOffset", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Object)

@@ -8,6 +8,7 @@ export declare class XAxisTicksComponent implements OnChanges, AfterViewInit {
     tickFormatting: any;
     showGridLines: boolean;
     gridLineHeight: any;
+    gridLineOffset: number;
     width: any;
     tickScaledWidth: number;
     tickWidth: number;

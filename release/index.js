@@ -7207,6 +7207,7 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.tickArguments = [5];
         this.tickStroke = '#ccc';
         this.showGridLines = false;
+        this.gridLineOffset = 0;
         this.tickScaledWidth = 100;
         this.tickWidth = 20;
         this.xAxisPositionReversed = false;
@@ -7244,7 +7245,7 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent.prototype.updateGridLines = function (height) {
         if (this.xAxisPositionReversed) {
             this.gridLineY1 = height;
-            this.gridLineY2 = height + this.gridLineHeight - 10;
+            this.gridLineY2 = height + this.gridLineHeight + this.gridLineOffset - 40;
         }
         else {
             this.gridLineY1 = -this.gridLineHeight;
@@ -7366,6 +7367,10 @@ var XAxisTicksComponent = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "gridLineHeight", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "gridLineOffset", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Object)
@@ -7523,7 +7528,7 @@ var XAxisComponent = /** @class */ (function () {
     XAxisComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'g[ngx-charts-x-axis]',
-            template: "\n    <svg:g\n      [attr.class]=\"xAxisClassName\"\n      [attr.transform]=\"transform\">\n      <svg:g ngx-charts-x-axis-ticks\n        *ngIf=\"xScale\"\n        [tickFormatting]=\"tickFormatting\"\n        [tickArguments]=\"tickArguments\"\n        [tickStroke]=\"tickStroke\"\n        [scale]=\"xScale\"\n        [orient]=\"xOrient\"\n        [showGridLines]=\"showGridLines\"\n        [xAxisPositionReversed]=\"xAxisPositionReversed\"\n        [gridLineHeight]=\"dims.height\"\n        [width]=\"dims.width\"\n        [tickWidth]=\"tickWidth\"\n        [tickValues]=\"ticks\"\n        (dimensionsChanged)=\"emitTicksHeight($event)\"\n      />\n      <svg:g ngx-charts-axis-label\n        *ngIf=\"showLabel\"\n        [label]=\"labelText\"\n        [offset]=\"labelOffset\"\n        [orient]=\"'bottom'\"\n        [height]=\"dims.height\"\n        [width]=\"dims.width\">\n      </svg:g>\n    </svg:g>\n  ",
+            template: "\n    <svg:g\n      [attr.class]=\"xAxisClassName\"\n      [attr.transform]=\"transform\">\n      <svg:g ngx-charts-x-axis-ticks\n        *ngIf=\"xScale\"\n        [tickFormatting]=\"tickFormatting\"\n        [tickArguments]=\"tickArguments\"\n        [tickStroke]=\"tickStroke\"\n        [scale]=\"xScale\"\n        [orient]=\"xOrient\"\n        [showGridLines]=\"showGridLines\"\n        [xAxisPositionReversed]=\"xAxisPositionReversed\"\n        [gridLineHeight]=\"dims.height\"\n        [gridLineOffset]=\"dims.yOffset\"\n        [width]=\"dims.width\"\n        [tickWidth]=\"tickWidth\"\n        [tickValues]=\"ticks\"\n        (dimensionsChanged)=\"emitTicksHeight($event)\"\n      />\n      <svg:g ngx-charts-axis-label\n        *ngIf=\"showLabel\"\n        [label]=\"labelText\"\n        [offset]=\"labelOffset\"\n        [orient]=\"'bottom'\"\n        [height]=\"dims.height\"\n        [width]=\"dims.width\">\n      </svg:g>\n    </svg:g>\n  ",
             changeDetection: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ChangeDetectionStrategy"].OnPush
         })
     ], XAxisComponent);
