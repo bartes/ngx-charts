@@ -36,6 +36,7 @@ export declare class TooltipDirective implements OnDestroy {
     private documentClickEvent;
     constructor(tooltipService: TooltipService, viewContainerRef: ViewContainerRef, renderer: Renderer);
     ngOnDestroy(): void;
+    ngOnChanges(): void;
     onFocus(): void;
     onBlur(): void;
     onMouseEnter(): void;

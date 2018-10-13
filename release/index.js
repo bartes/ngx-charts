@@ -11707,6 +11707,12 @@ var TooltipDirective = /** @class */ (function () {
     TooltipDirective.prototype.ngOnDestroy = function () {
         this.hideTooltip(true);
     };
+    TooltipDirective.prototype.ngOnChanges = function () {
+        if (this.component) {
+            this.hideTooltip(true);
+            this.showTooltip(true);
+        }
+    };
     TooltipDirective.prototype.onFocus = function () {
         if (this.listensForFocus) {
             this.showTooltip();
