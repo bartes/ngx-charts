@@ -1,7 +1,7 @@
 import {
   Directive, Input, Output, EventEmitter, HostListener,
   ViewContainerRef,
-  Renderer, OnDestroy
+  Renderer, OnDestroy, OnChanges
 } from '@angular/core';
 
 import { PlacementTypes } from './position';
@@ -61,6 +61,13 @@ export class TooltipDirective implements OnDestroy {
     this.hideTooltip(true);
   }
 
+  ngOnChanges() {
+    if(this.component) {
+      this.hideTooltip(true);
+      this.showTooltip(true);
+    }
+  }
+
   @HostListener('focusin')
   onFocus(): void {
     if(this.listensForFocus) {
@@ -79,7 +86,7 @@ export class TooltipDirective implements OnDestroy {
   onMouseEnter(): void {
     if(this.listensForHover) {
        this.showTooltip();
-     }
+    }
   }
 
   @HostListener('mouseleave', ['$event.target'])
