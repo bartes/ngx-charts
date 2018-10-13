@@ -55,6 +55,7 @@ import { ColorHelper } from '../common/color.helper';
         (deactivate)="deactivateCircle()"
         ngx-tooltip
         [tooltipDisabled]="tooltipDisabled"
+        [tooltipCssClass]="tooltipCssClass"
         [tooltipPlacement]="'top'"
         [tooltipType]="'tooltip'"
         [tooltipTitle]="tooltipTemplate ? undefined : getTooltipText(circle)"
@@ -87,6 +88,7 @@ export class CircleSeriesComponent implements OnChanges, OnInit {
   @Input() activeEntries: any[];
   @Input() tooltipDisabled: boolean = false;
   @Input() tooltipTemplate: TemplateRef<any>;
+  @Input() tooltipCssClass: string = '';
 
   @Output() select = new EventEmitter();
   @Output() activate = new EventEmitter();

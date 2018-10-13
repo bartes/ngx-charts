@@ -65,6 +65,7 @@ import { isRelatedEntry } from './domain.helper';
         [style.pointer-events]="'none'"
         ngx-tooltip
         [tooltipDisabled]="tooltipDisabled"
+        [tooltipCssClass]="tooltipCssClass"
         [tooltipPlacement]="'right'"
         [tooltipType]="'tooltip'"
         [tooltipSpacing]="15"
@@ -107,6 +108,7 @@ export class TooltipArea {
   @Input() showPercentage: boolean = false;
   @Input() tooltipDisabled: boolean = false;
   @Input() tooltipTemplate: TemplateRef<any>;
+  @Input() tooltipCssClass: string = '';
 
   @Input() hiddenEntries: any[];
 

@@ -45,6 +45,7 @@ export enum D0Types {
       [tooltipDisabled]="tooltipDisabled"
       [tooltipPlacement]="tooltipPlacement"
       [tooltipType]="tooltipType"
+      [tooltipCssClass]="tooltipCssClass"
       [tooltipTitle]="tooltipTemplate ? undefined : bar.tooltipText"
       [tooltipTemplate]="tooltipTemplate"
       [tooltipContext]="bar.data"
@@ -89,6 +90,7 @@ export class SeriesVerticalComponent implements OnChanges {
   @Input() seriesName: string;
   @Input() tooltipDisabled: boolean = false;
   @Input() tooltipTemplate: TemplateRef<any>;
+  @Input() tooltipCssClass: string = '';
   @Input() roundEdges: boolean;
   @Input() animations: boolean = true;
   @Input() showDataLabel: boolean = false;
