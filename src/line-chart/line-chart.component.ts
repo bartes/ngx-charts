@@ -100,6 +100,7 @@ import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper'
               [hiddenEntries]="hiddenEntries"
               [tooltipDisabled]="tooltipDisabled"
               [tooltipTemplate]="seriesTooltipTemplate"
+              [tooltipCssClass]="seriesTooltipCssClass"
               [syncedHoveredVertical]="syncedHoveredVertical"
               (hover)="updateHoveredVertical($event)"
             />
@@ -116,6 +117,7 @@ import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper'
                   [activeEntries]="activeEntries"
                   [tooltipDisabled]="tooltipDisabled"
                   [tooltipTemplate]="tooltipTemplate"
+                  [tooltipCssClass]="tooltipCssClass"
                   (select)="onSeriesClick($event, series)"
                   (activate)="onActivate($event)"
                   (deactivate)="onDeactivate($event)"
@@ -217,6 +219,9 @@ export class LineChartComponent extends BaseChartComponent {
 
   @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
   @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
+
+  @Input() tooltipCssClass: string = '';
+  @Input() seriesTooltipCssClass: string = '';
 
   dims: ViewDimensions;
   xSet: any;

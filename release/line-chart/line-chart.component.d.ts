@@ -44,6 +44,8 @@ export declare class LineChartComponent extends BaseChartComponent {
     hoveredVerticalDone: EventEmitter<any>;
     tooltipTemplate: TemplateRef<any>;
     seriesTooltipTemplate: TemplateRef<any>;
+    tooltipCssClass: string;
+    seriesTooltipCssClass: string;
     dims: ViewDimensions;
     xSet: any;
     xDomain: any;

@@ -11,6 +11,7 @@ export declare class CircleSeriesComponent implements OnChanges, OnInit {
     activeEntries: any[];
     tooltipDisabled: boolean;
     tooltipTemplate: TemplateRef<any>;
+    tooltipCssClass: string;
     select: EventEmitter<{}>;
     activate: EventEmitter<{}>;
     deactivate: EventEmitter<{}>;

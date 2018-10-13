@@ -16,6 +16,7 @@ export declare class SeriesVerticalComponent implements OnChanges {
     seriesName: string;
     tooltipDisabled: boolean;
     tooltipTemplate: TemplateRef<any>;
+    tooltipCssClass: string;
     roundEdges: boolean;
     animations: boolean;
     showDataLabel: boolean;

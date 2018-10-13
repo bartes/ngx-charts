@@ -74,6 +74,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
             [gradient]="gradient"
             [tooltipDisabled]="tooltipDisabled"
             [tooltipTemplate]="tooltipTemplate"
+            [tooltipCssClass]="tooltipCssClass"
             [showDataLabel]="showDataLabel"
             [dataLabelFormatting]="dataLabelFormatting"
             [seriesName]="group.name"
@@ -114,6 +115,7 @@ export class BarVerticalStackedComponent extends BaseChartComponent {
   @Input() xAxisLabel;
   @Input() yAxisLabel;
   @Input() tooltipDisabled: boolean = false;
+  @Input() tooltipCssClass: string = '';
   @Input() gradient: boolean;
   @Input() xShowGridLines: boolean = false;
   @Input() yShowGridLines: boolean = true;
