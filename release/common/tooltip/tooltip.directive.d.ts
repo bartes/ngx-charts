@@ -14,6 +14,7 @@ export declare class TooltipDirective implements OnDestroy {
     tooltipSpacing: number;
     tooltipDisabled: boolean;
     tooltipShowCaret: boolean;
+    tooltipAllowFlip: boolean;
     tooltipPlacement: PlacementTypes;
     tooltipAlignment: AlignmentTypes;
     tooltipType: StyleTypes;
@@ -25,6 +26,7 @@ export declare class TooltipDirective implements OnDestroy {
     tooltipShowEvent: ShowTypes;
     tooltipContext: any;
     tooltipImmediateExit: boolean;
+    tooltipShowOnChanges: boolean;
     show: EventEmitter<{}>;
     hide: EventEmitter<{}>;
     private readonly listensForFocus;

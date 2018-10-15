@@ -178,7 +178,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, ".ngx-charts-tooltip-content {\n  position: fixed;\n  border-radius: 3px;\n  z-index: 5000;\n  display: block;\n  font-weight: normal;\n  opacity: 0;\n  pointer-events: none !important; }\n  .ngx-charts-tooltip-content.type-popover {\n    background: #fff;\n    color: #060709;\n    border: 1px solid #72809b;\n    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);\n            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);\n    font-size: 13px;\n    padding: 4px; }\n    .ngx-charts-tooltip-content.type-popover .tooltip-caret {\n      position: absolute;\n      z-index: 5001;\n      width: 0;\n      height: 0; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-left {\n        border-top: 7px solid transparent;\n        border-bottom: 7px solid transparent;\n        border-left: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-top {\n        border-left: 7px solid transparent;\n        border-right: 7px solid transparent;\n        border-top: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-right {\n        border-top: 7px solid transparent;\n        border-bottom: 7px solid transparent;\n        border-right: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-bottom {\n        border-left: 7px solid transparent;\n        border-right: 7px solid transparent;\n        border-bottom: 7px solid #fff; }\n  .ngx-charts-tooltip-content.type-tooltip {\n    color: #fff;\n    background: rgba(0, 0, 0, 0.75);\n    font-size: 12px;\n    padding: 0 10px;\n    text-align: center;\n    pointer-events: auto; }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left {\n      border-top: 7px solid transparent;\n      border-bottom: 7px solid transparent;\n      border-left: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top {\n      border-left: 7px solid transparent;\n      border-right: 7px solid transparent;\n      border-top: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right {\n      border-top: 7px solid transparent;\n      border-bottom: 7px solid transparent;\n      border-right: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom {\n      border-left: 7px solid transparent;\n      border-right: 7px solid transparent;\n      border-bottom: 7px solid rgba(0, 0, 0, 0.75); }\n  .ngx-charts-tooltip-content .tooltip-label {\n    display: block;\n    line-height: 1em;\n    padding: 8px 5px 5px 5px;\n    font-size: 1em; }\n  .ngx-charts-tooltip-content .tooltip-val {\n    display: block;\n    font-size: 1.3em;\n    line-height: 1em;\n    padding: 0 5px 8px 5px; }\n  .ngx-charts-tooltip-content .tooltip-caret {\n    position: absolute;\n    z-index: 5001;\n    width: 0;\n    height: 0; }\n  .ngx-charts-tooltip-content.position-right {\n    -webkit-transform: translate3d(10px, 0, 0);\n            transform: translate3d(10px, 0, 0); }\n  .ngx-charts-tooltip-content.position-left {\n    -webkit-transform: translate3d(-10px, 0, 0);\n            transform: translate3d(-10px, 0, 0); }\n  .ngx-charts-tooltip-content.position-top {\n    -webkit-transform: translate3d(0, -10px, 0);\n            transform: translate3d(0, -10px, 0); }\n  .ngx-charts-tooltip-content.position-bottom {\n    -webkit-transform: translate3d(0, 10px, 0);\n            transform: translate3d(0, 10px, 0); }\n  .ngx-charts-tooltip-content.animate {\n    opacity: 1;\n    -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n    transition: opacity 0.3s, -webkit-transform 0.3s;\n    transition: opacity 0.3s, transform 0.3s;\n    transition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n    -webkit-transform: translate3d(0, 0, 0);\n            transform: translate3d(0, 0, 0);\n    pointer-events: auto; }\n\n.area-tooltip-container {\n  padding: 5px 0;\n  pointer-events: none; }\n\n.tooltip-item {\n  text-align: left;\n  line-height: 1.2em;\n  padding: 5px 0; }\n  .tooltip-item .tooltip-item-color {\n    display: inline-block;\n    height: 12px;\n    width: 12px;\n    margin-right: 5px;\n    color: #5b646b;\n    border-radius: 3px; }\n", ""]);
+exports.push([module.i, ".ngx-charts-tooltip-content {\n  position: fixed;\n  border-radius: 3px;\n  z-index: 5000;\n  display: block;\n  font-weight: normal;\n  opacity: 0;\n  pointer-events: none !important; }\n  .ngx-charts-tooltip-content.type-popover {\n    background: #fff;\n    color: #060709;\n    border: 1px solid #72809b;\n    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);\n            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);\n    font-size: 13px;\n    padding: 4px; }\n    .ngx-charts-tooltip-content.type-popover .tooltip-caret {\n      position: absolute;\n      z-index: 5001;\n      width: 0;\n      height: 0; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-left {\n        border-top: 7px solid transparent;\n        border-bottom: 7px solid transparent;\n        border-left: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-top {\n        border-left: 7px solid transparent;\n        border-right: 7px solid transparent;\n        border-top: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-right {\n        border-top: 7px solid transparent;\n        border-bottom: 7px solid transparent;\n        border-right: 7px solid #fff; }\n      .ngx-charts-tooltip-content.type-popover .tooltip-caret.position-bottom {\n        border-left: 7px solid transparent;\n        border-right: 7px solid transparent;\n        border-bottom: 7px solid #fff; }\n  .ngx-charts-tooltip-content.type-tooltip, .ngx-charts-tooltip-content.type-custom-tooltip {\n    color: #fff;\n    background: rgba(0, 0, 0, 0.75);\n    font-size: 12px;\n    padding: 0 10px;\n    text-align: center;\n    pointer-events: auto; }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-left {\n      border-top: 7px solid transparent;\n      border-bottom: 7px solid transparent;\n      border-left: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-top {\n      border-left: 7px solid transparent;\n      border-right: 7px solid transparent;\n      border-top: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-right {\n      border-top: 7px solid transparent;\n      border-bottom: 7px solid transparent;\n      border-right: 7px solid rgba(0, 0, 0, 0.75); }\n    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-bottom {\n      border-left: 7px solid transparent;\n      border-right: 7px solid transparent;\n      border-bottom: 7px solid rgba(0, 0, 0, 0.75); }\n  .ngx-charts-tooltip-content .tooltip-label {\n    display: block;\n    line-height: 1em;\n    padding: 8px 5px 5px 5px;\n    font-size: 1em; }\n  .ngx-charts-tooltip-content .tooltip-val {\n    display: block;\n    font-size: 1.3em;\n    line-height: 1em;\n    padding: 0 5px 8px 5px; }\n  .ngx-charts-tooltip-content .tooltip-caret {\n    position: absolute;\n    z-index: 5001;\n    width: 0;\n    height: 0; }\n  .ngx-charts-tooltip-content.position-right {\n    -webkit-transform: translate3d(10px, 0, 0);\n            transform: translate3d(10px, 0, 0); }\n  .ngx-charts-tooltip-content.position-left {\n    -webkit-transform: translate3d(-10px, 0, 0);\n            transform: translate3d(-10px, 0, 0); }\n  .ngx-charts-tooltip-content.position-top {\n    -webkit-transform: translate3d(0, -10px, 0);\n            transform: translate3d(0, -10px, 0); }\n  .ngx-charts-tooltip-content.position-bottom {\n    -webkit-transform: translate3d(0, 10px, 0);\n            transform: translate3d(0, 10px, 0); }\n  .ngx-charts-tooltip-content.animate {\n    opacity: 1;\n    -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;\n    transition: opacity 0.3s, -webkit-transform 0.3s;\n    transition: opacity 0.3s, transform 0.3s;\n    transition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;\n    -webkit-transform: translate3d(0, 0, 0);\n            transform: translate3d(0, 0, 0);\n    pointer-events: auto; }\n\n.area-tooltip-container {\n  padding: 5px 0;\n  pointer-events: none; }\n\n.tooltip-item {\n  text-align: left;\n  line-height: 1.2em;\n  padding: 5px 0; }\n  .tooltip-item .tooltip-item-color {\n    display: inline-block;\n    height: 12px;\n    width: 12px;\n    margin-right: 5px;\n    color: #5b646b;\n    border-radius: 3px; }\n", ""]);
 
 // exports
 
@@ -10892,27 +10892,35 @@ var AlignmentTypes;
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return InjectionRegistery; });
+var DEFAULT_CATEGORY = 'general';
 var InjectionRegistery = /** @class */ (function () {
     function InjectionRegistery(injectionService) {
         this.injectionService = injectionService;
         this.defaults = {};
-        this.components = new Map();
+        this.components = {};
     }
-    InjectionRegistery.prototype.getByType = function (type) {
+    InjectionRegistery.prototype.getComponents = function (category) {
+        var usedCategory = category || DEFAULT_CATEGORY;
+        if (!this.components[usedCategory]) {
+            this.components[usedCategory] = new Map();
+        }
+        return this.components[usedCategory];
+    };
+    InjectionRegistery.prototype.getByType = function (type, category) {
         if (type === void 0) { type = this.type; }
-        return this.components.get(type);
+        return this.getComponents(category).get(type);
     };
-    InjectionRegistery.prototype.create = function (bindings) {
-        return this.createByType(this.type, bindings);
+    InjectionRegistery.prototype.create = function (bindings, category) {
+        return this.createByType(this.type, bindings, category);
     };
-    InjectionRegistery.prototype.createByType = function (type, bindings) {
+    InjectionRegistery.prototype.createByType = function (type, bindings, category) {
         bindings = this.assignDefaults(bindings);
         var component = this.injectComponent(type, bindings);
-        this.register(type, component);
+        this.register(type, component, category);
         return component;
     };
-    InjectionRegistery.prototype.destroy = function (instance) {
-        var compsByType = this.components.get(instance.componentType);
+    InjectionRegistery.prototype.destroy = function (instance, category) {
+        var compsByType = this.getComponents(category).get(instance.componentType);
         if (compsByType) {
             var idx = compsByType.indexOf(instance);
             if (idx > -1) {
@@ -10922,15 +10930,15 @@ var InjectionRegistery = /** @class */ (function () {
             }
         }
     };
-    InjectionRegistery.prototype.destroyAll = function () {
-        this.destroyByType(this.type);
+    InjectionRegistery.prototype.destroyAll = function (category) {
+        this.destroyByType(this.type, category);
     };
-    InjectionRegistery.prototype.destroyByType = function (type) {
-        var comps = this.components.get(type);
+    InjectionRegistery.prototype.destroyByType = function (type, category) {
+        var comps = this.getComponents(category).get(type);
         if (comps) {
             for (var _i = 0, comps_1 = comps; _i < comps_1.length; _i++) {
                 var comp = comps_1[_i];
-                this.destroy(comp);
+                this.destroy(comp, category);
             }
         }
     };
@@ -10950,11 +10958,12 @@ var InjectionRegistery = /** @class */ (function () {
     InjectionRegistery.prototype.injectComponent = function (type, bindings) {
         return this.injectionService.appendComponent(type, bindings);
     };
-    InjectionRegistery.prototype.register = function (type, component) {
-        if (!this.components.has(type)) {
-            this.components.set(type, []);
+    InjectionRegistery.prototype.register = function (type, component, category) {
+        var components = this.getComponents(category);
+        if (!components.has(type)) {
+            components.set(type, []);
         }
-        var types = this.components.get(type);
+        var types = components.get(type);
         types.push(component);
     };
     return InjectionRegistery;
@@ -11466,6 +11475,7 @@ var ShowTypes;
 var StyleTypes;
 (function (StyleTypes) {
     StyleTypes[StyleTypes["popover"] = 'popover'] = "popover";
+    StyleTypes[StyleTypes["customTooltip"] = 'custom-tooltip'] = "customTooltip";
     StyleTypes[StyleTypes["tooltip"] = 'tooltip'] = "tooltip";
 })(StyleTypes || (StyleTypes = {}));
 
@@ -11539,7 +11549,9 @@ var TooltipContentComponent = /** @class */ (function () {
         if (!hostDim.height && !hostDim.width)
             return;
         var elmDim = nativeElm.getBoundingClientRect();
-        this.checkFlip(hostDim, elmDim);
+        if (this.allowFlip) {
+            this.checkFlip(hostDim, elmDim);
+        }
         this.positionContent(nativeElm, hostDim, elmDim);
         if (this.showCaret) {
             this.positionCaret(hostDim, elmDim);
@@ -11587,6 +11599,10 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "alignment", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
+        __metadata("design:type", Boolean)
+    ], TooltipContentComponent.prototype, "allowFlip", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Number)
     ], TooltipContentComponent.prototype, "spacing", void 0);
     __decorate([
@@ -11616,6 +11632,7 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "cssClasses", null);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["HostListener"])('window:resize'),
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["HostListener"])('window:scroll'),
         Object(__WEBPACK_IMPORTED_MODULE_1__utils_throttle__["a" /* throttleable */])(100),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", []),
@@ -11676,6 +11693,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipSpacing = 10;
         this.tooltipDisabled = false;
         this.tooltipShowCaret = true;
+        this.tooltipAllowFlip = true;
         this.tooltipPlacement = __WEBPACK_IMPORTED_MODULE_1__position__["a" /* PlacementTypes */].top;
         this.tooltipAlignment = __WEBPACK_IMPORTED_MODULE_3__alignment_type__["a" /* AlignmentTypes */].center;
         this.tooltipType = __WEBPACK_IMPORTED_MODULE_2__style_type__["a" /* StyleTypes */].popover;
@@ -11685,6 +11703,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipShowTimeout = 100;
         this.tooltipShowEvent = __WEBPACK_IMPORTED_MODULE_4__show_type__["a" /* ShowTypes */].all;
         this.tooltipImmediateExit = false;
+        this.tooltipShowOnChanges = false;
         this.show = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
         this.hide = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
     }
@@ -11711,6 +11730,9 @@ var TooltipDirective = /** @class */ (function () {
         if (this.component) {
             this.hideTooltip(true);
             this.showTooltip(true);
+        }
+        else if (this.tooltipShowOnChanges) {
+            this.showTooltip();
         }
     };
     TooltipDirective.prototype.onFocus = function () {
@@ -11752,9 +11774,9 @@ var TooltipDirective = /** @class */ (function () {
         var time = immediate ? 0 : this.tooltipShowTimeout;
         clearTimeout(this.timeout);
         this.timeout = setTimeout(function () {
-            _this.tooltipService.destroyAll();
+            _this.tooltipService.destroyAll(_this.tooltipType);
             var options = _this.createBoundOptions();
-            _this.component = _this.tooltipService.create(options);
+            _this.component = _this.tooltipService.create(options, _this.tooltipType);
             // add a tiny timeout to avoid event re-triggers
             setTimeout(function () {
                 if (_this.component) {
@@ -11801,7 +11823,7 @@ var TooltipDirective = /** @class */ (function () {
             // emit events
             _this.hide.emit(true);
             // destroy component
-            _this.tooltipService.destroy(_this.component);
+            _this.tooltipService.destroy(_this.component, _this.tooltipType);
             _this.component = undefined;
         };
         clearTimeout(this.timeout);
@@ -11820,6 +11842,7 @@ var TooltipDirective = /** @class */ (function () {
             placement: this.tooltipPlacement,
             alignment: this.tooltipAlignment,
             type: this.tooltipType,
+            allowFlip: this.tooltipAllowFlip,
             showCaret: this.tooltipShowCaret,
             cssClass: this.tooltipCssClass,
             spacing: this.tooltipSpacing,
@@ -11850,6 +11873,10 @@ var TooltipDirective = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipShowCaret", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipAllowFlip", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Number)
@@ -11894,6 +11921,10 @@ var TooltipDirective = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipImmediateExit", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipShowOnChanges", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Output"])(),
         __metadata("design:type", Object)

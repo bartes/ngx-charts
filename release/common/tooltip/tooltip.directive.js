@@ -24,6 +24,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipSpacing = 10;
         this.tooltipDisabled = false;
         this.tooltipShowCaret = true;
+        this.tooltipAllowFlip = true;
         this.tooltipPlacement = PlacementTypes.top;
         this.tooltipAlignment = AlignmentTypes.center;
         this.tooltipType = StyleTypes.popover;
@@ -33,6 +34,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipShowTimeout = 100;
         this.tooltipShowEvent = ShowTypes.all;
         this.tooltipImmediateExit = false;
+        this.tooltipShowOnChanges = false;
         this.show = new EventEmitter();
         this.hide = new EventEmitter();
     }
@@ -59,6 +61,9 @@ var TooltipDirective = /** @class */ (function () {
         if (this.component) {
             this.hideTooltip(true);
             this.showTooltip(true);
+        }
+        else if (this.tooltipShowOnChanges) {
+            this.showTooltip();
         }
     };
     TooltipDirective.prototype.onFocus = function () {
@@ -100,9 +105,9 @@ var TooltipDirective = /** @class */ (function () {
         var time = immediate ? 0 : this.tooltipShowTimeout;
         clearTimeout(this.timeout);
         this.timeout = setTimeout(function () {
-            _this.tooltipService.destroyAll();
+            _this.tooltipService.destroyAll(_this.tooltipType);
             var options = _this.createBoundOptions();
-            _this.component = _this.tooltipService.create(options);
+            _this.component = _this.tooltipService.create(options, _this.tooltipType);
             // add a tiny timeout to avoid event re-triggers
             setTimeout(function () {
                 if (_this.component) {
@@ -149,7 +154,7 @@ var TooltipDirective = /** @class */ (function () {
             // emit events
             _this.hide.emit(true);
             // destroy component
-            _this.tooltipService.destroy(_this.component);
+            _this.tooltipService.destroy(_this.component, _this.tooltipType);
             _this.component = undefined;
         };
         clearTimeout(this.timeout);
@@ -168,6 +173,7 @@ var TooltipDirective = /** @class */ (function () {
             placement: this.tooltipPlacement,
             alignment: this.tooltipAlignment,
             type: this.tooltipType,
+            allowFlip: this.tooltipAllowFlip,
             showCaret: this.tooltipShowCaret,
             cssClass: this.tooltipCssClass,
             spacing: this.tooltipSpacing,
@@ -198,6 +204,10 @@ var TooltipDirective = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipShowCaret", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipAllowFlip", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Number)
@@ -242,6 +252,10 @@ var TooltipDirective = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipImmediateExit", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipShowOnChanges", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
