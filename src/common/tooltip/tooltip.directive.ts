@@ -31,6 +31,7 @@ export class TooltipDirective implements OnDestroy {
   @Input() tooltipShowEvent: ShowTypes = ShowTypes.all;
   @Input() tooltipContext: any;
   @Input() tooltipImmediateExit: boolean = false;
+  @Input() tooltipShowOnChanges: boolean = false;
 
   @Output() show = new EventEmitter();
   @Output() hide = new EventEmitter();
@@ -64,6 +65,8 @@ export class TooltipDirective implements OnDestroy {
   ngOnChanges() {
     if(this.component) {
       this.hideTooltip(true);
+      this.showTooltip(true);
+    } else if(this.tooltipShowOnChanges) {
       this.showTooltip(true);
     }
   }
