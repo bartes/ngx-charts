@@ -39,7 +39,9 @@ var TooltipContentComponent = /** @class */ (function () {
         if (!hostDim.height && !hostDim.width)
             return;
         var elmDim = nativeElm.getBoundingClientRect();
-        this.checkFlip(hostDim, elmDim);
+        if (this.allowFlip) {
+            this.checkFlip(hostDim, elmDim);
+        }
         this.positionContent(nativeElm, hostDim, elmDim);
         if (this.showCaret) {
             this.positionCaret(hostDim, elmDim);
@@ -87,6 +89,10 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "alignment", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipContentComponent.prototype, "allowFlip", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Number)
     ], TooltipContentComponent.prototype, "spacing", void 0);
     __decorate([
@@ -116,6 +122,7 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "cssClasses", null);
     __decorate([
         HostListener('window:resize'),
+        HostListener('window:scroll'),
         throttleable(100),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", []),

@@ -34,26 +34,26 @@
         border-left: 7px solid transparent;
         border-right: 7px solid transparent;
         border-bottom: 7px solid #fff; }
-  .ngx-charts-tooltip-content.type-tooltip {
+  .ngx-charts-tooltip-content.type-tooltip, .ngx-charts-tooltip-content.type-custom-tooltip {
     color: #fff;
     background: rgba(0, 0, 0, 0.75);
     font-size: 12px;
     padding: 0 10px;
     text-align: center;
     pointer-events: auto; }
-    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left {
+    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-left {
       border-top: 7px solid transparent;
       border-bottom: 7px solid transparent;
       border-left: 7px solid rgba(0, 0, 0, 0.75); }
-    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top {
+    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-top {
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
       border-top: 7px solid rgba(0, 0, 0, 0.75); }
-    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right {
+    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-right {
       border-top: 7px solid transparent;
       border-bottom: 7px solid transparent;
       border-right: 7px solid rgba(0, 0, 0, 0.75); }
-    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom {
+    .ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom, .ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-bottom {
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
       border-bottom: 7px solid rgba(0, 0, 0, 0.75); }

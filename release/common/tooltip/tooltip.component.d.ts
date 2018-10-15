@@ -10,6 +10,7 @@ export declare class TooltipContentComponent implements AfterViewInit {
     type: StyleTypes;
     placement: PlacementTypes;
     alignment: AlignmentTypes;
+    allowFlip: true;
     spacing: number;
     cssClass: string;
     title: string;
