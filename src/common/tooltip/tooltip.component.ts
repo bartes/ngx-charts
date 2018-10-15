@@ -42,6 +42,7 @@ export class TooltipContentComponent implements AfterViewInit {
   @Input() type: StyleTypes;
   @Input() placement: PlacementTypes;
   @Input() alignment: AlignmentTypes;
+  @Input() allowFlip: true;
   @Input() spacing: number;
   @Input() cssClass: string;
   @Input() title: string;
@@ -76,7 +77,9 @@ export class TooltipContentComponent implements AfterViewInit {
     if(!hostDim.height && !hostDim.width) return;
 
     const elmDim = nativeElm.getBoundingClientRect();
-    this.checkFlip(hostDim, elmDim);
+    if(this.allowFlip) {
+      this.checkFlip(hostDim, elmDim);
+    }
     this.positionContent(nativeElm, hostDim, elmDim);
 
     if(this.showCaret) {

@@ -1,34 +1,44 @@
 import { ComponentRef } from '@angular/core';
 import { InjectionService } from './injection.service';
 
+const DEFAULT_CATEGORY = 'general';
+
 export abstract class InjectionRegistery {
 
   protected abstract type: any;
 
   protected defaults: any = {};
-  protected components: Map<any, any> = new Map();
+  protected components: {[key: string]: Map<any, any>} = {};
 
   constructor(public injectionService: InjectionService) { }
 
-  getByType(type: any = this.type) {
-    return this.components.get(type);
+  getComponents(category) {
+    const usedCategory = category || DEFAULT_CATEGORY;
+    if(!this.components[usedCategory]) {
+      this.components[usedCategory] = new Map();
+    }
+    return this.components[usedCategory];
   }
 
-  create(bindings: any): any {
-    return this.createByType(this.type, bindings);
+  getByType(type: any = this.type, category?) {
+    return this.getComponents(category).get(type);
   }
 
-  createByType(type: any, bindings: any): any {
+  create(bindings: any, category?): any {
+    return this.createByType(this.type, bindings, category);
+  }
+
+  createByType(type: any, bindings: any, category?): any {
     bindings = this.assignDefaults(bindings);
 
     const component = this.injectComponent(type, bindings);
-    this.register(type, component);
+    this.register(type, component, category);
 
     return component;
   }
 
-  destroy(instance): void {
-    const compsByType = this.components.get(instance.componentType);
+  destroy(instance, category?): void {
+    const compsByType = this.getComponents(category).get(instance.componentType);
 
     if(compsByType) {
       const idx = compsByType.indexOf(instance);
@@ -41,16 +51,16 @@ export abstract class InjectionRegistery {
     }
   }
 
-  destroyAll(): void {
-    this.destroyByType(this.type);
+  destroyAll(category?): void {
+    this.destroyByType(this.type, category);
   }
 
-  destroyByType(type): void {
-    const comps = this.components.get(type);
+  destroyByType(type, category?): void {
+    const comps = this.getComponents(category).get(type);
 
     if(comps) {
       for(const comp of comps) {
-        this.destroy(comp);
+        this.destroy(comp, category);
       }
     }
   }
@@ -77,12 +87,13 @@ export abstract class InjectionRegistery {
     return this.injectionService.appendComponent(type, bindings);
   }
 
-  protected register(type, component): void {
-    if(!this.components.has(type)) {
-      this.components.set(type, []);
+  protected register(type, component, category?): void {
+    const components = this.getComponents(category);
+    if(!components.has(type)) {
+      components.set(type, []);
     }
 
-    const types = this.components.get(type);
+    const types = components.get(type);
     types.push(component);
   }
 

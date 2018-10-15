@@ -20,6 +20,7 @@ export class TooltipDirective implements OnDestroy {
   @Input() tooltipSpacing: number = 10;
   @Input() tooltipDisabled: boolean = false;
   @Input() tooltipShowCaret: boolean = true;
+  @Input() tooltipAllowFlip: boolean = true;
   @Input() tooltipPlacement: PlacementTypes = PlacementTypes.top;
   @Input() tooltipAlignment: AlignmentTypes = AlignmentTypes.center;
   @Input() tooltipType: StyleTypes = StyleTypes.popover;
@@ -67,7 +68,7 @@ export class TooltipDirective implements OnDestroy {
       this.hideTooltip(true);
       this.showTooltip(true);
     } else if(this.tooltipShowOnChanges) {
-      this.showTooltip(true);
+      this.showTooltip();
     }
   }
 
@@ -121,10 +122,10 @@ export class TooltipDirective implements OnDestroy {
 
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      this.tooltipService.destroyAll();
+      this.tooltipService.destroyAll(this.tooltipType);
 
       const options = this.createBoundOptions();
-      this.component = this.tooltipService.create(options);
+      this.component = this.tooltipService.create(options, this.tooltipType);
 
       // add a tiny timeout to avoid event re-triggers
       setTimeout(() => {
@@ -172,7 +173,7 @@ export class TooltipDirective implements OnDestroy {
       this.hide.emit(true);
 
       // destroy component
-      this.tooltipService.destroy(this.component);
+      this.tooltipService.destroy(this.component, this.tooltipType);
       this.component = undefined;
     };
 
@@ -192,6 +193,7 @@ export class TooltipDirective implements OnDestroy {
       placement: this.tooltipPlacement,
       alignment: this.tooltipAlignment,
       type: this.tooltipType,
+      allowFlip: this.tooltipAllowFlip,
       showCaret: this.tooltipShowCaret,
       cssClass: this.tooltipCssClass,
       spacing: this.tooltipSpacing,

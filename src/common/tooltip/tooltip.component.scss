@@ -68,7 +68,7 @@ $shadow:
    }
   }
 
-  &.type-tooltip {
+  &.type-tooltip, &.type-custom-tooltip {
    color: $tooltip-color;
    background: $tooltip-bg;
    font-size: 12px;
