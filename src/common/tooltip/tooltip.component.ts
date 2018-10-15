@@ -111,6 +111,7 @@ export class TooltipContentComponent implements AfterViewInit {
   }
 
   @HostListener('window:resize')
+  @HostListener('window:scroll')
   @throttleable(100)
   onWindowResize(): void {
     this.position();
