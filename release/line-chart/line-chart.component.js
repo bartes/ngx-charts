@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -25,7 +28,7 @@ import { calculateViewDimensions } from '../common/view-dimensions.helper';
 import { ColorHelper } from '../common/color.helper';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { id } from '../utils/id';
-import { getUniqueXDomainValues, isRelatedEntry } from '../common/domain.helper';
+import { getUniqueXDomainValues, getScaleType } from '../common/domain.helper';
 var LineChartComponent = /** @class */ (function (_super) {
     __extends(LineChartComponent, _super);
     function LineChartComponent() {
@@ -106,8 +109,8 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
     };
     LineChartComponent.prototype.getXDomain = function () {
-        var values = getUniqueXDomainValues(this.results, this.hiddenEntries);
-        this.scaleType = this.getScaleType(values);
+        var values = getUniqueXDomainValues(this.results);
+        this.scaleType = getScaleType(values);
         var domain = [];
         if (this.scaleType === 'linear') {
             values = values.map(function (v) { return Number(v); });
@@ -215,30 +218,6 @@ var LineChartComponent = /** @class */ (function (_super) {
             .range([height, 0])
             .domain(domain);
         return this.roundDomains ? scale.nice() : scale;
-    };
-    LineChartComponent.prototype.getScaleType = function (values) {
-        var date = true;
-        var num = true;
-        for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
-            var value = values_1[_i];
-            if (!this.isDate(value)) {
-                date = false;
-            }
-            if (typeof value !== 'number') {
-                num = false;
-            }
-        }
-        if (date)
-            return 'time';
-        if (num)
-            return 'linear';
-        return 'ordinal';
-    };
-    LineChartComponent.prototype.isDate = function (value) {
-        if (value instanceof Date) {
-            return true;
-        }
-        return false;
     };
     LineChartComponent.prototype.updateDomain = function (domain) {
         this.filteredDomain = domain;

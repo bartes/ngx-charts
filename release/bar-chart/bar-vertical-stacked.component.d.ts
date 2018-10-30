@@ -68,10 +68,10 @@ export declare class BarVerticalStackedComponent extends BaseChartComponent {
         title: any;
         position: string;
     };
-    updateYAxisWidth({width}: {
+    updateYAxisWidth({ width }: {
         width: any;
     }): void;
-    updateXAxisHeight({height}: {
+    updateXAxisHeight({ height }: {
         height: any;
     }): void;
     onActivate(event: any, group?: any): void;

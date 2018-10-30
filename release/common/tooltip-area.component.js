@@ -7,13 +7,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, Input, Output, EventEmitter, ViewChild, Renderer, ChangeDetectionStrategy, TemplateRef, } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ChangeDetectionStrategy, TemplateRef, } from '@angular/core';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { MouseEvent } from '../events';
 import { isRelatedEntry } from './domain.helper';
 var TooltipArea = /** @class */ (function () {
-    function TooltipArea(renderer) {
-        this.renderer = renderer;
+    function TooltipArea() {
         this.anchorOpacity = 0;
         this.anchorPos = -1;
         this.anchorValues = [];
@@ -85,7 +84,7 @@ var TooltipArea = /** @class */ (function () {
         this.anchorValues = this.getValues(closestPoint);
         if (this.anchorPos !== this.lastAnchorPos) {
             var ev = new MouseEvent('mouseleave', { bubbles: false });
-            this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [ev]);
+            this.tooltipAnchor.nativeElement.dispatchEvent(ev);
             this.anchorOpacity = 0.7;
             this.hover.emit({
                 position: xPos,
@@ -125,11 +124,11 @@ var TooltipArea = /** @class */ (function () {
     };
     TooltipArea.prototype.showTooltip = function () {
         var event = new MouseEvent('mouseenter', { bubbles: false });
-        this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [event]);
+        this.tooltipAnchor.nativeElement.dispatchEvent(event);
     };
     TooltipArea.prototype.hideTooltip = function () {
         var event = new MouseEvent('mouseleave', { bubbles: false });
-        this.renderer.invokeElementMethod(this.tooltipAnchor.nativeElement, 'dispatchEvent', [event]);
+        this.tooltipAnchor.nativeElement.dispatchEvent(event);
         this.anchorOpacity = 0;
         this.lastAnchorPos = -1;
     };
@@ -243,8 +242,7 @@ var TooltipArea = /** @class */ (function () {
                     ])
                 ])
             ]
-        }),
-        __metadata("design:paramtypes", [Renderer])
+        })
     ], TooltipArea);
     return TooltipArea;
 }());

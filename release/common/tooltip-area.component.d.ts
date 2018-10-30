@@ -1,6 +1,5 @@
-import { EventEmitter, Renderer, TemplateRef } from '@angular/core';
+import { EventEmitter, TemplateRef } from '@angular/core';
 export declare class TooltipArea {
-    private renderer;
     anchorOpacity: number;
     anchorPos: number;
     anchorValues: any[];
@@ -19,8 +18,6 @@ export declare class TooltipArea {
     syncedHoveredVertical: any;
     hover: EventEmitter<{}>;
     tooltipAnchor: any;
-    constructor(renderer: Renderer);
-    isHidden(entry: any): boolean;
     getValues(xVal: any): any[];
     calculateAnchor(data: any): any;
     mouseMove(event: any): void;
