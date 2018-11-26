@@ -28,7 +28,7 @@ export declare class BaseChartComponent implements OnChanges, AfterViewInit, OnD
      */
     formatDates(): void;
     protected unbindEvents(): void;
-    private bindWindowResizeEvent();
+    private bindWindowResizeEvent;
     /**
      * Clones the data into a new object
      *
@@ -38,5 +38,5 @@ export declare class BaseChartComponent implements OnChanges, AfterViewInit, OnD
      *
      * @memberOf BaseChart
      */
-    private cloneData(data);
+    private cloneData;
 }

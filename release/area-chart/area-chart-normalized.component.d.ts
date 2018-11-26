@@ -61,8 +61,6 @@ export declare class AreaChartNormalizedComponent extends BaseChartComponent {
     getSeriesDomain(): any[];
     getXScale(domain: any, width: any): any;
     getYScale(domain: any, height: any): any;
-    getScaleType(values: any): string;
-    isDate(value: any): boolean;
     updateDomain(domain: any): void;
     updateHoveredVertical(item: any): void;
     hideCircles(): void;
@@ -76,10 +74,10 @@ export declare class AreaChartNormalizedComponent extends BaseChartComponent {
         title: any;
         position: string;
     };
-    updateYAxisWidth({width}: {
+    updateYAxisWidth({ width }: {
         width: any;
     }): void;
-    updateXAxisHeight({height}: {
+    updateXAxisHeight({ height }: {
         height: any;
     }): void;
     onActivate(item: any): void;

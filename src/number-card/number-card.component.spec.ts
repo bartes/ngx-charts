@@ -3,31 +3,29 @@ import { Component } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { multi } from '../../demo/data';
-import { APP_BASE_HREF } from '@angular/common';
+import {APP_BASE_HREF} from '@angular/common';
 
-import { AreaChartModule } from './area-chart.module';
+import { NumberCardModule } from './number-card.module';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
-
-const colors = ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'];
 
 @Component({
   selector: 'test-component',
   template: ''
 })
 class TestComponent {
-  data: any = multi;
+  multi: any = multi;
   colorScheme = {
-    domain: colors
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
 }
 
-describe('<ngx-charts-area-chart>', () => {
+describe('<ngx-charts-number-card>', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TestComponent],
-      imports: [NoopAnimationsModule, AreaChartModule],
+      imports: [NoopAnimationsModule, NumberCardModule],
       providers: [
         {provide: APP_BASE_HREF, useValue: '/'}
       ]
@@ -40,11 +38,11 @@ describe('<ngx-charts-area-chart>', () => {
       TestBed.overrideComponent(TestComponent, {
         set: {
           template: `
-               <ngx-charts-area-chart
+              <ngx-charts-number-card
                 [view]="[400,800]"
                 [scheme]="colorScheme"
-                [results]="data">
-              </ngx-charts-area-chart>`
+                [results]="multi">
+              </ngx-charts-number-card>`
         }
       }).compileComponents();
     }));
@@ -59,24 +57,13 @@ describe('<ngx-charts-area-chart>', () => {
       expect(svg.getAttribute('height')).toBe('800');
     }));
 
-    it('should render 4 area elements', async(() => {
-      const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+    it(`should render ${multi.length} ngx-charts-cards`, async(() => {
+        const fixture = TestBed.createComponent(TestComponent);
+        fixture.detectChanges();
 
-      const compiled = fixture.debugElement.nativeElement;
+        const compiled = fixture.debugElement.nativeElement;
 
-      expect(compiled.querySelectorAll('path.area').length).toEqual(4);
-    }));
-
-    it('should match specified colors for area elements', async(() => {
-      const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-
-      const compiled = fixture.debugElement.nativeElement;
-
-      const fills = Array.from(compiled.querySelectorAll('path.area'))
-        .map((areaElement: Element) => areaElement.getAttribute('fill'));
-      expect(colors.every((color) => fills.includes(color))).toBeTruthy();
+        expect(compiled.querySelectorAll('g[ngx-charts-card]').length).toEqual(multi.length);
     }));
   });
 });

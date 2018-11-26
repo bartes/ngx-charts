@@ -64,7 +64,6 @@ export declare class HeatMapComponent extends BaseChartComponent {
     getYScale(): any;
     getRects(): any[];
     onClick(data: any): void;
-    getScaleType(values: any): string;
     setColors(): void;
     getLegendOptions(): {
         scaleType: string;
@@ -73,10 +72,10 @@ export declare class HeatMapComponent extends BaseChartComponent {
         title: string;
         position: string;
     };
-    updateYAxisWidth({width}: {
+    updateYAxisWidth({ width }: {
         width: any;
     }): void;
-    updateXAxisHeight({height}: {
+    updateXAxisHeight({ height }: {
         height: any;
     }): void;
 }

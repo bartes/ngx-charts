@@ -1,7 +1,10 @@
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -22,6 +25,7 @@ import { scaleBand } from 'd3-scale';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { calculateViewDimensions } from '../common/view-dimensions.helper';
 import { ColorHelper } from '../common/color.helper';
+import { getScaleType } from '../common/domain.helper';
 var HeatMapComponent = /** @class */ (function (_super) {
     __extends(HeatMapComponent, _super);
     function HeatMapComponent() {
@@ -42,7 +46,7 @@ var HeatMapComponent = /** @class */ (function (_super) {
         this.xDomain = this.getXDomain();
         this.yDomain = this.getYDomain();
         this.valueDomain = this.getValueDomain();
-        this.scaleType = this.getScaleType(this.valueDomain);
+        this.scaleType = getScaleType(this.valueDomain, false);
         this.dims = calculateViewDimensions({
             width: this.width,
             height: this.height,
@@ -180,18 +184,6 @@ var HeatMapComponent = /** @class */ (function (_super) {
     };
     HeatMapComponent.prototype.onClick = function (data) {
         this.select.emit(data);
-    };
-    HeatMapComponent.prototype.getScaleType = function (values) {
-        var num = true;
-        for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
-            var value = values_1[_i];
-            if (typeof value !== 'number') {
-                num = false;
-            }
-        }
-        if (num)
-            return 'linear';
-        return 'ordinal';
     };
     HeatMapComponent.prototype.setColors = function () {
         this.colors = new ColorHelper(this.scheme, this.scaleType, this.valueDomain);

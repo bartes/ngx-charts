@@ -4,7 +4,7 @@ export interface ViewDimensions {
     xOffset: number;
     yOffset: number;
 }
-export declare function calculateViewDimensions({width, height, margins, showXAxis, showYAxis, xAxisHeight, yAxisWidth, showXLabel, showYLabel, showLegend, legendType, legendPosition, xAxisPositionReversed, columns}: {
+export declare function calculateViewDimensions({ width, height, margins, showXAxis, showYAxis, xAxisHeight, yAxisWidth, showXLabel, showYLabel, showLegend, legendType, legendPosition, xAxisPositionReversed, columns }: {
     width: any;
     height: any;
     margins: any;
