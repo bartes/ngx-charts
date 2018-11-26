@@ -15,7 +15,7 @@ export declare function isRelatedEntry(relatedEntries: any, entryName: any): boo
  * @param results
  * @param excluded
  */
-export declare function getUniqueXDomainValues(results: any[]): any[];
+export declare function getUniqueXDomainValues(results: any[], excluded?: any[]): any[];
 /**
  * Get the scaleType of enumerable of values.
  * @param values

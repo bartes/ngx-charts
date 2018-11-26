@@ -8,6 +8,7 @@ export declare class LegendComponent implements OnChanges {
     width: any;
     activeEntries: any;
     horizontal: boolean;
+    hiddenEntries: any;
     labelClick: EventEmitter<any>;
     labelToggle: EventEmitter<any>;
     labelActivate: EventEmitter<any>;

@@ -133,7 +133,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, ".chart-legend {\n  display: inline-block;\n  padding: 0;\n  width: auto !important; }\n  .chart-legend .legend-title {\n    white-space: nowrap;\n    overflow: hidden;\n    margin-left: 10px;\n    margin-bottom: 5px;\n    font-size: 14px;\n    font-weight: bold; }\n  .chart-legend ul, .chart-legend li {\n    padding: 0;\n    margin: 0;\n    list-style: none; }\n  .chart-legend .horizontal-legend li {\n    display: inline-block; }\n  .chart-legend .legend-wrap {\n    width: calc(100% - 10px); }\n  .chart-legend .legend-labels {\n    line-height: 85%;\n    list-style: none;\n    text-align: left;\n    float: left;\n    width: 100%;\n    border-radius: 3px;\n    overflow-y: auto;\n    overflow-x: hidden;\n    white-space: nowrap;\n    background: rgba(0, 0, 0, 0.05); }\n  .chart-legend .legend-label {\n    cursor: pointer;\n    font-size: 90%;\n    margin: 8px;\n    color: #AFB7C8; }\n    .chart-legend .legend-label:hover {\n      color: #000;\n      -webkit-transition: 0.2s;\n      transition: 0.2s; }\n    .chart-legend .legend-label .active .legend-label-text {\n      color: #000; }\n  .chart-legend .legend-label-color {\n    display: inline-block;\n    height: 15px;\n    width: 15px;\n    margin-right: 5px;\n    color: #5b646b;\n    border-radius: 3px; }\n  .chart-legend .legend-label-text {\n    display: inline-block;\n    vertical-align: top;\n    line-height: 15px;\n    font-size: 12px;\n    width: calc(100% - 20px);\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n  .chart-legend .legend-title-text {\n    vertical-align: bottom;\n    display: inline-block;\n    line-height: 16px;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n", ""]);
+exports.push([module.i, ".chart-legend {\n  display: inline-block;\n  padding: 0;\n  width: auto !important; }\n  .chart-legend .legend-title {\n    white-space: nowrap;\n    overflow: hidden;\n    margin-left: 10px;\n    margin-bottom: 5px;\n    font-size: 14px;\n    font-weight: bold; }\n  .chart-legend ul, .chart-legend li {\n    padding: 0;\n    margin: 0;\n    list-style: none; }\n  .chart-legend .horizontal-legend li {\n    display: inline-block; }\n  .chart-legend .legend-wrap {\n    width: calc(100% - 10px); }\n  .chart-legend .legend-labels {\n    line-height: 85%;\n    list-style: none;\n    text-align: left;\n    float: left;\n    width: 100%;\n    border-radius: 3px;\n    overflow-y: auto;\n    overflow-x: hidden;\n    white-space: nowrap;\n    background: rgba(0, 0, 0, 0.05); }\n  .chart-legend .legend-wrap.horizontal-legend {\n    width: 100%;\n    margin-top: -35px; }\n    .chart-legend .legend-wrap.horizontal-legend .legend-labels {\n      text-align: center; }\n      .chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label {\n        display: inline-block;\n        margin: 4px; }\n        .chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label .legend-label-color {\n          margin-left: 0; }\n  .chart-legend .legend-label {\n    cursor: pointer;\n    font-size: 90%;\n    margin: 4px 0;\n    color: #AFB7C8; }\n    .chart-legend .legend-label:hover {\n      color: #000;\n      -webkit-transition: 0.2s;\n      transition: 0.2s; }\n    .chart-legend .legend-label .legend-label-box {\n      border-radius: 3px;\n      padding: 4px 4px 0 4px; }\n    .chart-legend .legend-label .active .legend-label-text {\n      color: #000; }\n  .chart-legend .legend-label-color {\n    display: inline-block;\n    height: 15px;\n    width: 15px;\n    margin-right: 5px;\n    margin-left: 5px;\n    color: #5b646b;\n    border-radius: 3px; }\n  .chart-legend .legend-label-text {\n    display: inline-block;\n    vertical-align: top;\n    line-height: 15px;\n    font-size: 12px;\n    width: calc(100% - 20px);\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n  .chart-legend .legend-title-text {\n    vertical-align: bottom;\n    display: inline-block;\n    line-height: 16px;\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n", ""]);
 
 // exports
 
@@ -148,7 +148,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, ".chart-legend {\n  display: inline-block;\n  padding: 0;\n  width: auto !important; }\n  .chart-legend .scale-legend {\n    text-align: center;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column; }\n  .chart-legend .scale-legend-wrap {\n    display: inline-block;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n    width: 30px;\n    border-radius: 5px;\n    margin: 0 auto; }\n  .chart-legend .scale-legend-label {\n    font-size: 12px; }\n  .chart-legend .horizontal-legend.scale-legend {\n    -webkit-box-orient: horizontal;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: row;\n            flex-direction: row; }\n  .chart-legend .horizontal-legend .scale-legend-wrap {\n    width: auto;\n    height: 30px;\n    margin: 0 16px; }\n", ""]);
+exports.push([module.i, ".chart-legend {\n  display: inline-block;\n  padding: 0;\n  width: auto !important; }\n  .chart-legend .scale-legend {\n    text-align: center;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column; }\n  .chart-legend .scale-legend-wrap {\n    display: inline-block;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n    width: 30px;\n    border-radius: 5px;\n    margin: 0 auto; }\n  .chart-legend .scale-legend-label {\n    font-size: 12px; }\n  .chart-legend .horizontal-legend {\n    text-align: center; }\n    .chart-legend .horizontal-legend.scale-legend {\n      -webkit-box-orient: horizontal;\n      -webkit-box-direction: normal;\n          -ms-flex-direction: row;\n              flex-direction: row; }\n    .chart-legend .horizontal-legend .scale-legend-wrap {\n      width: auto;\n      height: 30px;\n      margin: 0 16px; }\n", ""]);
 
 // exports
 
@@ -4477,6 +4477,7 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         _this.legend = false;
         _this.legendTitle = 'Legend';
         _this.legendPosition = 'right';
+        _this.xAxisPositionReversed = false;
         _this.tooltipDisabled = false;
         _this.tooltipCssClass = '';
         _this.xShowGridLines = false;
@@ -4512,7 +4513,8 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
             showYLabel: this.showYAxisLabel,
             showLegend: this.legend,
             legendType: this.schemeType,
-            legendPosition: this.legendPosition
+            legendPosition: this.legendPosition,
+            xAxisPositionReversed: this.xAxisPositionReversed,
         });
         if (this.showDataLabel) {
             this.dims.height -= this.dataLabelMaxHeight.negative;
@@ -6062,7 +6064,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
     SeriesVerticalComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'g[ngx-charts-series-vertical]',
-            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [ariaLabel]=\"bar.ariaLabel\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
+            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y + dims.yOffset\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [ariaLabel]=\"bar.ariaLabel\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipCssClass]=\"tooltipCssClass\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
             changeDetection: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ChangeDetectionStrategy"].OnPush,
             animations: [
                 Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["trigger"])('animationState', [
@@ -8346,7 +8348,7 @@ var ChartComponent = /** @class */ (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             providers: [__WEBPACK_IMPORTED_MODULE_2__tooltip__["g" /* TooltipService */]],
             selector: 'ngx-charts-chart',
-            template: "\n    <div\n      class=\"ngx-charts-outer\"\n      [style.width.px]=\"view[0]\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\">\n      <svg\n        class=\"ngx-charts\"\n        [attr.width]=\"chartWidth\"\n        [attr.height]=\"view[1]\">\n        <ng-content></ng-content>\n      </svg>\n      <ngx-charts-scale-legend\n        *ngIf=\"showLegend && legendType === 'scaleLegend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [valueRange]=\"legendOptions.domain\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\">\n      </ngx-charts-scale-legend>\n      <ngx-charts-legend\n        *ngIf=\"showLegend && legendType === 'legend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [data]=\"legendOptions.domain\"\n        [title]=\"legendOptions.title\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\"\n        [activeEntries]=\"activeEntries\"\n        (labelClick)=\"legendLabelClick.emit($event)\"\n        (labelActivate)=\"legendLabelActivate.emit($event)\"\n        (labelDeactivate)=\"legendLabelDeactivate.emit($event)\">\n      </ngx-charts-legend>\n    </div>\n  ",
+            template: "\n    <div\n      class=\"ngx-charts-outer\"\n      [style.width.px]=\"view[0]\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\">\n      <svg\n        class=\"ngx-charts\"\n        [attr.width]=\"chartWidth\"\n        [attr.height]=\"view[1]\">\n        <ng-content></ng-content>\n      </svg>\n      <ngx-charts-scale-legend\n        *ngIf=\"showLegend && legendType === 'scaleLegend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [valueRange]=\"legendOptions.domain\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\">\n      </ngx-charts-scale-legend>\n      <ngx-charts-legend\n        *ngIf=\"showLegend && legendType === 'legend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [data]=\"legendOptions.domain\"\n        [title]=\"legendOptions.title\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\"\n        [activeEntries]=\"activeEntries\"\n        [hiddenEntries]=\"hiddenEntries\"\n        (labelClick)=\"legendLabelClick.emit($event)\"\n        (labelToggle)=\"legendLabelToggle.emit($event)\"\n        (labelActivate)=\"legendLabelActivate.emit($event)\"\n        (labelDeactivate)=\"legendLabelDeactivate.emit($event)\">\n      </ngx-charts-legend>\n    </div>\n  ",
             changeDetection: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ChangeDetectionStrategy"].OnPush,
             animations: [
                 Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["trigger"])('animationState', [
@@ -9154,6 +9156,7 @@ function decimalChecker(countTo) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["c"] = isRelatedEntry;
 /* harmony export (immutable) */ __webpack_exports__["b"] = getUniqueXDomainValues;
 /* harmony export (immutable) */ __webpack_exports__["a"] = getScaleType;
 /**
@@ -9314,7 +9317,7 @@ var GridPanelSeriesComponent = /** @class */ (function () {
     };
     GridPanelSeriesComponent.prototype.getGridPanels = function () {
         var _this = this;
-        return this.data.map(function (d, i) {
+        return this.data.map(function (d) {
             var offset;
             var width;
             var height;
@@ -9469,7 +9472,7 @@ var GridPanelComponent = /** @class */ (function () {
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "C", function() { return __WEBPACK_IMPORTED_MODULE_3__axes__["d"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "D", function() { return __WEBPACK_IMPORTED_MODULE_3__axes__["e"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "E", function() { return __WEBPACK_IMPORTED_MODULE_3__axes__["f"]; });
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "N", function() { return __WEBPACK_IMPORTED_MODULE_3__axes__["g"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "O", function() { return __WEBPACK_IMPORTED_MODULE_3__axes__["g"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__count__ = __webpack_require__("./src/common/count/index.ts");
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_4__count__["a"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "G", function() { return __WEBPACK_IMPORTED_MODULE_4__count__["b"]; });
@@ -9502,9 +9505,9 @@ var GridPanelComponent = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__tooltip_area_component__ = __webpack_require__("./src/common/tooltip-area.component.ts");
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "w", function() { return __WEBPACK_IMPORTED_MODULE_17__tooltip_area_component__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__tick_format_helper__ = __webpack_require__("./src/common/tick-format.helper.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "O", function() { return __WEBPACK_IMPORTED_MODULE_18__tick_format_helper__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "P", function() { return __WEBPACK_IMPORTED_MODULE_18__tick_format_helper__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__trim_label_helper__ = __webpack_require__("./src/common/trim-label.helper.ts");
-/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "P", function() { return __WEBPACK_IMPORTED_MODULE_19__trim_label_helper__["a"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "Q", function() { return __WEBPACK_IMPORTED_MODULE_19__trim_label_helper__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__view_dimensions_helper__ = __webpack_require__("./src/common/view-dimensions.helper.ts");
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "F", function() { return __WEBPACK_IMPORTED_MODULE_20__view_dimensions_helper__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__label_helper__ = __webpack_require__("./src/common/label.helper.ts");
@@ -9512,6 +9515,7 @@ var GridPanelComponent = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__domain_helper__ = __webpack_require__("./src/common/domain.helper.ts");
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "J", function() { return __WEBPACK_IMPORTED_MODULE_22__domain_helper__["a"]; });
 /* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "K", function() { return __WEBPACK_IMPORTED_MODULE_22__domain_helper__["b"]; });
+/* harmony namespace reexport (by used) */ __webpack_require__.d(__webpack_exports__, "N", function() { return __WEBPACK_IMPORTED_MODULE_22__domain_helper__["c"]; });
 
 
 
@@ -9904,10 +9908,10 @@ var LegendComponent = /** @class */ (function () {
         return items;
     };
     LegendComponent.prototype.isActive = function (entry) {
-        return Object(__WEBPACK_IMPORTED_MODULE_2__domain_helper__["b" /* isRelatedEntry */])(this.activeEntries, entry.label);
+        return Object(__WEBPACK_IMPORTED_MODULE_2__domain_helper__["c" /* isRelatedEntry */])(this.activeEntries, entry.label);
     };
     LegendComponent.prototype.isHidden = function (entry) {
-        return Object(__WEBPACK_IMPORTED_MODULE_2__domain_helper__["b" /* isRelatedEntry */])(this.hiddenEntries, entry.label);
+        return Object(__WEBPACK_IMPORTED_MODULE_2__domain_helper__["c" /* isRelatedEntry */])(this.hiddenEntries, entry.label);
     };
     LegendComponent.prototype.activate = function (item) {
         this.labelActivate.emit(item);
@@ -9947,6 +9951,10 @@ var LegendComponent = /** @class */ (function () {
         __metadata("design:type", Object)
     ], LegendComponent.prototype, "horizontal", void 0);
     __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
+        __metadata("design:type", Object)
+    ], LegendComponent.prototype, "hiddenEntries", void 0);
+    __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Output"])(),
         __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"])
     ], LegendComponent.prototype, "labelClick", void 0);
@@ -9965,7 +9973,7 @@ var LegendComponent = /** @class */ (function () {
     LegendComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'ngx-charts-legend',
-            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\">\n        <ul class=\"legend-labels\"\n            [class.horizontal-legend]=\"horizontal\"\n          [style.max-height.px]=\"height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
+            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\" [class.horizontal-legend]=\"horizontal\">\n        <ul class=\"legend-labels\"\n          [style.max-height.px]=\"horizontal ? 25 : height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              [isHidden]=\"isHidden(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (toggle)=\"labelToggle.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
             styles: [__webpack_require__("./src/common/legend/legend.component.scss")],
             encapsulation: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewEncapsulation"].None,
             changeDetection: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ChangeDetectionStrategy"].OnPush
@@ -10372,7 +10380,7 @@ var Timeline = /** @class */ (function () {
         this.element = element.nativeElement;
     }
     Timeline.prototype.isHidden = function (entry) {
-        return Object(__WEBPACK_IMPORTED_MODULE_4__domain_helper__["b" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
+        return Object(__WEBPACK_IMPORTED_MODULE_4__domain_helper__["c" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
     };
     Timeline.prototype.ngOnChanges = function (changes) {
         this.update();
@@ -10593,7 +10601,7 @@ var TooltipArea = /** @class */ (function () {
         this.hover = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
     }
     TooltipArea.prototype.isHidden = function (entry) {
-        return Object(__WEBPACK_IMPORTED_MODULE_3__domain_helper__["b" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
+        return Object(__WEBPACK_IMPORTED_MODULE_3__domain_helper__["c" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
     };
     TooltipArea.prototype.getValues = function (xVal) {
         var results = [];
@@ -12087,10 +12095,11 @@ function trimLabel(s, max) {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = calculateViewDimensions;
 function calculateViewDimensions(_a) {
-    var width = _a.width, height = _a.height, margins = _a.margins, _b = _a.showXAxis, showXAxis = _b === void 0 ? false : _b, _c = _a.showYAxis, showYAxis = _c === void 0 ? false : _c, _d = _a.xAxisHeight, xAxisHeight = _d === void 0 ? 0 : _d, _e = _a.yAxisWidth, yAxisWidth = _e === void 0 ? 0 : _e, _f = _a.showXLabel, showXLabel = _f === void 0 ? false : _f, _g = _a.showYLabel, showYLabel = _g === void 0 ? false : _g, _h = _a.showLegend, showLegend = _h === void 0 ? false : _h, _j = _a.legendType, legendType = _j === void 0 ? 'ordinal' : _j, _k = _a.legendPosition, legendPosition = _k === void 0 ? 'right' : _k, _l = _a.columns, columns = _l === void 0 ? 12 : _l;
+    var width = _a.width, height = _a.height, margins = _a.margins, _b = _a.showXAxis, showXAxis = _b === void 0 ? false : _b, _c = _a.showYAxis, showYAxis = _c === void 0 ? false : _c, _d = _a.xAxisHeight, xAxisHeight = _d === void 0 ? 0 : _d, _e = _a.yAxisWidth, yAxisWidth = _e === void 0 ? 0 : _e, _f = _a.showXLabel, showXLabel = _f === void 0 ? false : _f, _g = _a.showYLabel, showYLabel = _g === void 0 ? false : _g, _h = _a.showLegend, showLegend = _h === void 0 ? false : _h, _j = _a.legendType, legendType = _j === void 0 ? 'ordinal' : _j, _k = _a.legendPosition, legendPosition = _k === void 0 ? 'right' : _k, _l = _a.xAxisPositionReversed, xAxisPositionReversed = _l === void 0 ? false : _l, _m = _a.columns, columns = _m === void 0 ? 12 : _m;
     var xOffset = margins[3];
     var chartWidth = width;
     var chartHeight = height - margins[0] - margins[2];
+    var yOffset = 0;
     if (showLegend && legendPosition === 'right') {
         if (legendType === 'ordinal') {
             columns -= 2;
@@ -14047,7 +14056,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "XAxisTicksComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["C"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "YAxisComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["D"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "YAxisTicksComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["E"]; });
-/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "reduceTicks", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["N"]; });
+/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "reduceTicks", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["O"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "ColorHelper", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["k"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "ChartComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["h"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "AreaComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["c"]; });
@@ -14061,10 +14070,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "SvgLinearGradientComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["t"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "SvgRadialGradientComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["u"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "TooltipArea", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["w"]; });
-/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "tickFormat", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["O"]; });
-/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "trimLabel", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["P"]; });
+/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "tickFormat", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["P"]; });
+/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "trimLabel", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["Q"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "calculateViewDimensions", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["F"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "formatLabel", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["I"]; });
+/* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "isRelatedEntry", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["N"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "getUniqueXDomainValues", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["K"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "getScaleType", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["J"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "LegendComponent", function() { return __WEBPACK_IMPORTED_MODULE_1__common__["o"]; });
@@ -14266,7 +14276,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         return _this;
     }
     LineChartComponent.prototype.isHidden = function (entry) {
-        return Object(__WEBPACK_IMPORTED_MODULE_8__common_domain_helper__["b" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
+        return Object(__WEBPACK_IMPORTED_MODULE_8__common_domain_helper__["c" /* isRelatedEntry */])(this.hiddenEntries, entry.name);
     };
     LineChartComponent.prototype.update = function () {
         _super.prototype.update.call(this);
@@ -14316,7 +14326,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
     };
     LineChartComponent.prototype.getXDomain = function () {
-        var values = Object(__WEBPACK_IMPORTED_MODULE_8__common_domain_helper__["b" /* getUniqueXDomainValues */])(this.results);
+        var values = Object(__WEBPACK_IMPORTED_MODULE_8__common_domain_helper__["b" /* getUniqueXDomainValues */])(this.results, this.hiddenEntries);
         this.scaleType = Object(__WEBPACK_IMPORTED_MODULE_8__common_domain_helper__["a" /* getScaleType */])(values);
         var domain = [];
         if (this.scaleType === 'linear') {

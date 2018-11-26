@@ -18,6 +18,7 @@ export declare class TooltipArea {
     syncedHoveredVertical: any;
     hover: EventEmitter<{}>;
     tooltipAnchor: any;
+    isHidden(entry: any): boolean;
     getValues(xVal: any): any[];
     calculateAnchor(data: any): any;
     mouseMove(event: any): void;

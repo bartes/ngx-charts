@@ -1,10 +1,10 @@
-import { EventEmitter, ViewContainerRef, Renderer2, OnDestroy } from '@angular/core';
+import { EventEmitter, ViewContainerRef, Renderer2, OnDestroy, OnChanges } from '@angular/core';
 import { PlacementTypes } from './position';
 import { StyleTypes } from './style.type';
 import { AlignmentTypes } from './alignment.type';
 import { ShowTypes } from './show.type';
 import { TooltipService } from './tooltip.service';
-export declare class TooltipDirective implements OnDestroy {
+export declare class TooltipDirective implements OnDestroy, OnChanges {
     private tooltipService;
     private viewContainerRef;
     private renderer;

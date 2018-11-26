@@ -358,6 +358,7 @@ var PositionHelper = /** @class */ (function () {
 var StyleTypes;
 (function (StyleTypes) {
     StyleTypes[StyleTypes["popover"] = 'popover'] = "popover";
+    StyleTypes[StyleTypes["customTooltip"] = 'custom-tooltip'] = "customTooltip";
     StyleTypes[StyleTypes["tooltip"] = 'tooltip'] = "tooltip";
 })(StyleTypes || (StyleTypes = {}));
 
@@ -520,27 +521,35 @@ var InjectionService = /** @class */ (function () {
     return InjectionService;
 }());
 
+var DEFAULT_CATEGORY = 'general';
 var InjectionRegistery = /** @class */ (function () {
     function InjectionRegistery(injectionService) {
         this.injectionService = injectionService;
         this.defaults = {};
-        this.components = new Map();
+        this.components = {};
     }
-    InjectionRegistery.prototype.getByType = function (type) {
+    InjectionRegistery.prototype.getComponents = function (category) {
+        var usedCategory = category || DEFAULT_CATEGORY;
+        if (!this.components[usedCategory]) {
+            this.components[usedCategory] = new Map();
+        }
+        return this.components[usedCategory];
+    };
+    InjectionRegistery.prototype.getByType = function (type, category) {
         if (type === void 0) { type = this.type; }
-        return this.components.get(type);
+        return this.getComponents(category).get(type);
     };
-    InjectionRegistery.prototype.create = function (bindings) {
-        return this.createByType(this.type, bindings);
+    InjectionRegistery.prototype.create = function (bindings, category) {
+        return this.createByType(this.type, bindings, category);
     };
-    InjectionRegistery.prototype.createByType = function (type, bindings) {
+    InjectionRegistery.prototype.createByType = function (type, bindings, category) {
         bindings = this.assignDefaults(bindings);
         var component = this.injectComponent(type, bindings);
-        this.register(type, component);
+        this.register(type, component, category);
         return component;
     };
-    InjectionRegistery.prototype.destroy = function (instance) {
-        var compsByType = this.components.get(instance.componentType);
+    InjectionRegistery.prototype.destroy = function (instance, category) {
+        var compsByType = this.getComponents(category).get(instance.componentType);
         if (compsByType) {
             var idx = compsByType.indexOf(instance);
             if (idx > -1) {
@@ -550,15 +559,15 @@ var InjectionRegistery = /** @class */ (function () {
             }
         }
     };
-    InjectionRegistery.prototype.destroyAll = function () {
-        this.destroyByType(this.type);
+    InjectionRegistery.prototype.destroyAll = function (category) {
+        this.destroyByType(this.type, category);
     };
-    InjectionRegistery.prototype.destroyByType = function (type) {
-        var comps = this.components.get(type);
+    InjectionRegistery.prototype.destroyByType = function (type, category) {
+        var comps = this.getComponents(category).get(type);
         if (comps) {
             for (var _i = 0, comps_1 = comps; _i < comps_1.length; _i++) {
                 var comp = comps_1[_i];
-                this.destroy(comp);
+                this.destroy(comp, category);
             }
         }
     };
@@ -578,11 +587,12 @@ var InjectionRegistery = /** @class */ (function () {
     InjectionRegistery.prototype.injectComponent = function (type, bindings) {
         return this.injectionService.appendComponent(type, bindings);
     };
-    InjectionRegistery.prototype.register = function (type, component) {
-        if (!this.components.has(type)) {
-            this.components.set(type, []);
+    InjectionRegistery.prototype.register = function (type, component, category) {
+        var components = this.getComponents(category);
+        if (!components.has(type)) {
+            components.set(type, []);
         }
-        var types = this.components.get(type);
+        var types = components.get(type);
         types.push(component);
     };
     return InjectionRegistery;
@@ -685,7 +695,9 @@ var TooltipContentComponent = /** @class */ (function () {
         if (!hostDim.height && !hostDim.width)
             return;
         var elmDim = nativeElm.getBoundingClientRect();
-        this.checkFlip(hostDim, elmDim);
+        if (this.allowFlip) {
+            this.checkFlip(hostDim, elmDim);
+        }
         this.positionContent(nativeElm, hostDim, elmDim);
         if (this.showCaret) {
             this.positionCaret(hostDim, elmDim);
@@ -733,6 +745,10 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "alignment", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipContentComponent.prototype, "allowFlip", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Number)
     ], TooltipContentComponent.prototype, "spacing", void 0);
     __decorate([
@@ -762,6 +778,7 @@ var TooltipContentComponent = /** @class */ (function () {
     ], TooltipContentComponent.prototype, "cssClasses", null);
     __decorate([
         HostListener('window:resize'),
+        HostListener('window:scroll'),
         throttleable(100),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", []),
@@ -772,7 +789,7 @@ var TooltipContentComponent = /** @class */ (function () {
             selector: 'ngx-tooltip-content',
             template: "\n    <div>\n      <span\n        #caretElm\n        [hidden]=\"!showCaret\"\n        class=\"tooltip-caret position-{{this.placement}}\">\n      </span>\n      <div class=\"tooltip-content\">\n        <span *ngIf=\"!title\">\n          <ng-template\n            [ngTemplateOutlet]=\"template\"\n            [ngTemplateOutletContext]=\"{ model: context }\">\n          </ng-template>\n        </span>\n        <span\n          *ngIf=\"title\"\n          [innerHTML]=\"title\">\n        </span>\n      </div>\n    </div>\n  ",
             encapsulation: ViewEncapsulation.None,
-            styles: [".ngx-charts-tooltip-content{position:fixed;border-radius:3px;z-index:5000;display:block;font-weight:400;opacity:0;pointer-events:none!important}.ngx-charts-tooltip-content.type-popover{background:#fff;color:#060709;border:1px solid #72809b;box-shadow:0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);font-size:13px;padding:4px}.ngx-charts-tooltip-content.type-popover .tooltip-caret{position:absolute;z-index:5001;width:0;height:0}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-left{border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-top{border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-right{border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-bottom{border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #fff}.ngx-charts-tooltip-content.type-tooltip{color:#fff;background:rgba(0,0,0,.75);font-size:12px;padding:0 10px;text-align:center;pointer-events:auto}.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left{border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top{border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right{border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom{border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content .tooltip-label{display:block;line-height:1em;padding:8px 5px 5px 5px;font-size:1em}.ngx-charts-tooltip-content .tooltip-val{display:block;font-size:1.3em;line-height:1em;padding:0 5px 8px 5px}.ngx-charts-tooltip-content .tooltip-caret{position:absolute;z-index:5001;width:0;height:0}.ngx-charts-tooltip-content.position-right{transform:translate3d(10px,0,0)}.ngx-charts-tooltip-content.position-left{transform:translate3d(-10px,0,0)}.ngx-charts-tooltip-content.position-top{transform:translate3d(0,-10px,0)}.ngx-charts-tooltip-content.position-bottom{transform:translate3d(0,10px,0)}.ngx-charts-tooltip-content.animate{opacity:1;transition:opacity .3s,transform .3s;transform:translate3d(0,0,0);pointer-events:auto}.area-tooltip-container{padding:5px 0;pointer-events:none}.tooltip-item{text-align:left;line-height:1.2em;padding:5px 0}.tooltip-item .tooltip-item-color{display:inline-block;height:12px;width:12px;margin-right:5px;color:#5b646b;border-radius:3px}"]
+            styles: [".ngx-charts-tooltip-content{position:fixed;border-radius:3px;z-index:5000;display:block;font-weight:400;opacity:0;pointer-events:none!important}.ngx-charts-tooltip-content.type-popover{background:#fff;color:#060709;border:1px solid #72809b;box-shadow:0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);font-size:13px;padding:4px}.ngx-charts-tooltip-content.type-popover .tooltip-caret{position:absolute;z-index:5001;width:0;height:0}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-left{border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-top{border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-right{border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid #fff}.ngx-charts-tooltip-content.type-popover .tooltip-caret.position-bottom{border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #fff}.ngx-charts-tooltip-content.type-custom-tooltip,.ngx-charts-tooltip-content.type-tooltip{color:#fff;background:rgba(0,0,0,.75);font-size:12px;padding:0 10px;text-align:center;pointer-events:auto}.ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-left,.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-left{border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-top,.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-top{border-left:7px solid transparent;border-right:7px solid transparent;border-top:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-right,.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-right{border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content.type-custom-tooltip .tooltip-caret.position-bottom,.ngx-charts-tooltip-content.type-tooltip .tooltip-caret.position-bottom{border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid rgba(0,0,0,.75)}.ngx-charts-tooltip-content .tooltip-label{display:block;line-height:1em;padding:8px 5px 5px 5px;font-size:1em}.ngx-charts-tooltip-content .tooltip-val{display:block;font-size:1.3em;line-height:1em;padding:0 5px 8px 5px}.ngx-charts-tooltip-content .tooltip-caret{position:absolute;z-index:5001;width:0;height:0}.ngx-charts-tooltip-content.position-right{transform:translate3d(10px,0,0)}.ngx-charts-tooltip-content.position-left{transform:translate3d(-10px,0,0)}.ngx-charts-tooltip-content.position-top{transform:translate3d(0,-10px,0)}.ngx-charts-tooltip-content.position-bottom{transform:translate3d(0,10px,0)}.ngx-charts-tooltip-content.animate{opacity:1;transition:opacity .3s,transform .3s;transform:translate3d(0,0,0);pointer-events:auto}.area-tooltip-container{padding:5px 0;pointer-events:none}.tooltip-item{text-align:left;line-height:1.2em;padding:5px 0}.tooltip-item .tooltip-item-color{display:inline-block;height:12px;width:12px;margin-right:5px;color:#5b646b;border-radius:3px}"]
         }),
         __metadata("design:paramtypes", [typeof (_d = typeof ElementRef !== "undefined" && ElementRef) === "function" ? _d : Object, typeof (_e = typeof Renderer2 !== "undefined" && Renderer2) === "function" ? _e : Object])
     ], TooltipContentComponent);
@@ -806,6 +823,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipSpacing = 10;
         this.tooltipDisabled = false;
         this.tooltipShowCaret = true;
+        this.tooltipAllowFlip = true;
         this.tooltipPlacement = PlacementTypes.top;
         this.tooltipAlignment = AlignmentTypes.center;
         this.tooltipType = StyleTypes.popover;
@@ -815,6 +833,7 @@ var TooltipDirective = /** @class */ (function () {
         this.tooltipShowTimeout = 100;
         this.tooltipShowEvent = ShowTypes.all;
         this.tooltipImmediateExit = false;
+        this.tooltipShowOnChanges = false;
         this.show = new EventEmitter();
         this.hide = new EventEmitter();
     }
@@ -836,6 +855,15 @@ var TooltipDirective = /** @class */ (function () {
     });
     TooltipDirective.prototype.ngOnDestroy = function () {
         this.hideTooltip(true);
+    };
+    TooltipDirective.prototype.ngOnChanges = function () {
+        if (this.component) {
+            this.hideTooltip(true);
+            this.showTooltip(true);
+        }
+        else if (this.tooltipShowOnChanges) {
+            this.showTooltip();
+        }
     };
     TooltipDirective.prototype.onFocus = function () {
         if (this.listensForFocus) {
@@ -876,9 +904,9 @@ var TooltipDirective = /** @class */ (function () {
         var time = immediate ? 0 : this.tooltipShowTimeout;
         clearTimeout(this.timeout);
         this.timeout = setTimeout(function () {
-            _this.tooltipService.destroyAll();
+            _this.tooltipService.destroyAll(_this.tooltipType);
             var options = _this.createBoundOptions();
-            _this.component = _this.tooltipService.create(options);
+            _this.component = _this.tooltipService.create(options, _this.tooltipType);
             // add a tiny timeout to avoid event re-triggers
             setTimeout(function () {
                 if (_this.component) {
@@ -925,7 +953,7 @@ var TooltipDirective = /** @class */ (function () {
             // emit events
             _this.hide.emit(true);
             // destroy component
-            _this.tooltipService.destroy(_this.component);
+            _this.tooltipService.destroy(_this.component, _this.tooltipType);
             _this.component = undefined;
         };
         clearTimeout(this.timeout);
@@ -944,6 +972,7 @@ var TooltipDirective = /** @class */ (function () {
             placement: this.tooltipPlacement,
             alignment: this.tooltipAlignment,
             type: this.tooltipType,
+            allowFlip: this.tooltipAllowFlip,
             showCaret: this.tooltipShowCaret,
             cssClass: this.tooltipCssClass,
             spacing: this.tooltipSpacing,
@@ -975,6 +1004,10 @@ var TooltipDirective = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipShowCaret", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipAllowFlip", void 0);
     __decorate([
         Input(),
         __metadata("design:type", typeof (_a = typeof PlacementTypes !== "undefined" && PlacementTypes) === "function" ? _a : Object)
@@ -1019,6 +1052,10 @@ var TooltipDirective = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], TooltipDirective.prototype, "tooltipImmediateExit", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], TooltipDirective.prototype, "tooltipShowOnChanges", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
@@ -1086,6 +1123,7 @@ var ChartComponent = /** @class */ (function () {
         this.showLegend = false;
         this.animations = true;
         this.legendLabelClick = new EventEmitter();
+        this.legendLabelToggle = new EventEmitter();
         this.legendLabelActivate = new EventEmitter();
         this.legendLabelDeactivate = new EventEmitter();
         this.tooltipService.injectionService.setRootViewContainer(this.vcr);
@@ -1120,7 +1158,7 @@ var ChartComponent = /** @class */ (function () {
             return 'legend';
         }
     };
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     __decorate([
         Input(),
         __metadata("design:type", Object)
@@ -1155,6 +1193,10 @@ var ChartComponent = /** @class */ (function () {
     ], ChartComponent.prototype, "activeEntries", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Array)
+    ], ChartComponent.prototype, "hiddenEntries", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Boolean)
     ], ChartComponent.prototype, "animations", void 0);
     __decorate([
@@ -1164,16 +1206,20 @@ var ChartComponent = /** @class */ (function () {
     __decorate([
         Output(),
         __metadata("design:type", typeof (_b = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _b : Object)
-    ], ChartComponent.prototype, "legendLabelActivate", void 0);
+    ], ChartComponent.prototype, "legendLabelToggle", void 0);
     __decorate([
         Output(),
         __metadata("design:type", typeof (_c = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _c : Object)
+    ], ChartComponent.prototype, "legendLabelActivate", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", typeof (_d = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _d : Object)
     ], ChartComponent.prototype, "legendLabelDeactivate", void 0);
     ChartComponent = __decorate([
         Component({
             providers: [TooltipService],
             selector: 'ngx-charts-chart',
-            template: "\n    <div\n      class=\"ngx-charts-outer\"\n      [style.width.px]=\"view[0]\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\">\n      <svg\n        class=\"ngx-charts\"\n        [attr.width]=\"chartWidth\"\n        [attr.height]=\"view[1]\">\n        <ng-content></ng-content>\n      </svg>\n      <ngx-charts-scale-legend\n        *ngIf=\"showLegend && legendType === 'scaleLegend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [valueRange]=\"legendOptions.domain\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\">\n      </ngx-charts-scale-legend>\n      <ngx-charts-legend\n        *ngIf=\"showLegend && legendType === 'legend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [data]=\"legendOptions.domain\"\n        [title]=\"legendOptions.title\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\"\n        [activeEntries]=\"activeEntries\"\n        (labelClick)=\"legendLabelClick.emit($event)\"\n        (labelActivate)=\"legendLabelActivate.emit($event)\"\n        (labelDeactivate)=\"legendLabelDeactivate.emit($event)\">\n      </ngx-charts-legend>\n    </div>\n  ",
+            template: "\n    <div\n      class=\"ngx-charts-outer\"\n      [style.width.px]=\"view[0]\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\">\n      <svg\n        class=\"ngx-charts\"\n        [attr.width]=\"chartWidth\"\n        [attr.height]=\"view[1]\">\n        <ng-content></ng-content>\n      </svg>\n      <ngx-charts-scale-legend\n        *ngIf=\"showLegend && legendType === 'scaleLegend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [valueRange]=\"legendOptions.domain\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\">\n      </ngx-charts-scale-legend>\n      <ngx-charts-legend\n        *ngIf=\"showLegend && legendType === 'legend'\"\n        class=\"chart-legend\"\n        [horizontal]=\"legendOptions && legendOptions.position === 'below'\"\n        [data]=\"legendOptions.domain\"\n        [title]=\"legendOptions.title\"\n        [colors]=\"legendOptions.colors\"\n        [height]=\"view[1]\"\n        [width]=\"legendWidth\"\n        [activeEntries]=\"activeEntries\"\n        [hiddenEntries]=\"hiddenEntries\"\n        (labelClick)=\"legendLabelClick.emit($event)\"\n        (labelToggle)=\"legendLabelToggle.emit($event)\"\n        (labelActivate)=\"legendLabelActivate.emit($event)\"\n        (labelDeactivate)=\"legendLabelDeactivate.emit($event)\">\n      </ngx-charts-legend>\n    </div>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [
@@ -1184,7 +1230,7 @@ var ChartComponent = /** @class */ (function () {
                 ])
             ]
         }),
-        __metadata("design:paramtypes", [typeof (_d = typeof ViewContainerRef !== "undefined" && ViewContainerRef) === "function" ? _d : Object, typeof (_e = typeof TooltipService !== "undefined" && TooltipService) === "function" ? _e : Object])
+        __metadata("design:paramtypes", [typeof (_e = typeof ViewContainerRef !== "undefined" && ViewContainerRef) === "function" ? _e : Object, typeof (_f = typeof TooltipService !== "undefined" && TooltipService) === "function" ? _f : Object])
     ], ChartComponent);
     return ChartComponent;
 }());
@@ -1206,11 +1252,71 @@ function formatLabel(label) {
     return label;
 }
 
+/**
+ * Based on the data, return an array with unique values.
+ *
+ * @export
+ * @returns boolean
+ * @param results
+ * @param item
+ */
+function isRelatedEntry(relatedEntries, entryName) {
+    if (!relatedEntries) {
+        return false;
+    }
+    var item = relatedEntries.find(function (d) {
+        return entryName === d.name;
+    });
+    return item !== undefined;
+}
+/**
+ * Based on the data, return an array with unique values.
+ *
+ * @export
+ * @returns array
+ * @param results
+ * @param excluded
+ */
+function getUniqueXDomainValues(results, excluded) {
+    var valueSet = new Set();
+    for (var _i = 0, results_1 = results; _i < results_1.length; _i++) {
+        var result = results_1[_i];
+        if (excluded && isRelatedEntry(excluded, result.name)) {
+            continue;
+        }
+        for (var _a = 0, _b = result.series; _a < _b.length; _a++) {
+            var d = _b[_a];
+            valueSet.add(d.name);
+        }
+    }
+    return Array.from(valueSet);
+}
+/**
+ * Get the scaleType of enumerable of values.
+ * @param values
+ * @returns {string} 'time', 'linear' or 'ordinal'
+ */
+function getScaleType(values, checkDateType) {
+    if (checkDateType === void 0) { checkDateType = true; }
+    if (checkDateType) {
+        var allDates = values.every(function (value) { return value instanceof Date; });
+        if (allDates) {
+            return 'time';
+        }
+    }
+    var allNumbers = values.every(function (value) { return typeof value === 'number'; });
+    if (allNumbers) {
+        return 'linear';
+    }
+    return 'ordinal';
+}
+
 var LegendComponent = /** @class */ (function () {
     function LegendComponent(cd) {
         this.cd = cd;
         this.horizontal = false;
         this.labelClick = new EventEmitter();
+        this.labelToggle = new EventEmitter();
         this.labelActivate = new EventEmitter();
         this.labelDeactivate = new EventEmitter();
         this.legendEntries = [];
@@ -1245,12 +1351,10 @@ var LegendComponent = /** @class */ (function () {
         return items;
     };
     LegendComponent.prototype.isActive = function (entry) {
-        if (!this.activeEntries)
-            return false;
-        var item = this.activeEntries.find(function (d) {
-            return entry.label === d.name;
-        });
-        return item !== undefined;
+        return isRelatedEntry(this.activeEntries, entry.label);
+    };
+    LegendComponent.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.label);
     };
     LegendComponent.prototype.activate = function (item) {
         this.labelActivate.emit(item);
@@ -1261,7 +1365,7 @@ var LegendComponent = /** @class */ (function () {
     LegendComponent.prototype.trackBy = function (index, item) {
         return item.label;
     };
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     __decorate([
         Input(),
         __metadata("design:type", Object)
@@ -1291,26 +1395,34 @@ var LegendComponent = /** @class */ (function () {
         __metadata("design:type", Object)
     ], LegendComponent.prototype, "horizontal", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LegendComponent.prototype, "hiddenEntries", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", typeof (_a = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _a : Object)
     ], LegendComponent.prototype, "labelClick", void 0);
     __decorate([
         Output(),
         __metadata("design:type", typeof (_b = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _b : Object)
-    ], LegendComponent.prototype, "labelActivate", void 0);
+    ], LegendComponent.prototype, "labelToggle", void 0);
     __decorate([
         Output(),
         __metadata("design:type", typeof (_c = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _c : Object)
+    ], LegendComponent.prototype, "labelActivate", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", typeof (_d = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _d : Object)
     ], LegendComponent.prototype, "labelDeactivate", void 0);
     LegendComponent = __decorate([
         Component({
             selector: 'ngx-charts-legend',
-            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\">\n        <ul class=\"legend-labels\"\n            [class.horizontal-legend]=\"horizontal\"\n          [style.max-height.px]=\"height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
-            styles: [".chart-legend{display:inline-block;padding:0;width:auto!important}.chart-legend .legend-title{white-space:nowrap;overflow:hidden;margin-left:10px;margin-bottom:5px;font-size:14px;font-weight:700}.chart-legend li,.chart-legend ul{padding:0;margin:0;list-style:none}.chart-legend .horizontal-legend li{display:inline-block}.chart-legend .legend-wrap{width:calc(100% - 10px)}.chart-legend .legend-labels{line-height:85%;list-style:none;text-align:left;float:left;width:100%;border-radius:3px;overflow-y:auto;overflow-x:hidden;white-space:nowrap;background:rgba(0,0,0,.05)}.chart-legend .legend-label{cursor:pointer;font-size:90%;margin:8px;color:#afb7c8}.chart-legend .legend-label:hover{color:#000;-webkit-transition:.2s;-moz-transition:.2s;transition:.2s}.chart-legend .legend-label .active .legend-label-text{color:#000}.chart-legend .legend-label-color{display:inline-block;height:15px;width:15px;margin-right:5px;color:#5b646b;border-radius:3px}.chart-legend .legend-label-text{display:inline-block;vertical-align:top;line-height:15px;font-size:12px;width:calc(100% - 20px);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.chart-legend .legend-title-text{vertical-align:bottom;display:inline-block;line-height:16px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}"],
+            template: "\n    <div [style.width.px]=\"width\">\n      <header class=\"legend-title\" *ngIf=\"title?.length > 0\">\n        <span class=\"legend-title-text\">{{title}}</span>\n      </header>\n      <div class=\"legend-wrap\" [class.horizontal-legend]=\"horizontal\">\n        <ul class=\"legend-labels\"\n          [style.max-height.px]=\"horizontal ? 25 : height - 45\">\n          <li\n            *ngFor=\"let entry of legendEntries; trackBy: trackBy\"\n            class=\"legend-label\">\n            <ngx-charts-legend-entry\n              [label]=\"entry.label\"\n              [formattedLabel]=\"entry.formattedLabel\"\n              [color]=\"entry.color\"\n              [isActive]=\"isActive(entry)\"\n              [isHidden]=\"isHidden(entry)\"\n              (select)=\"labelClick.emit($event)\"\n              (toggle)=\"labelToggle.emit($event)\"\n              (activate)=\"activate($event)\"\n              (deactivate)=\"deactivate($event)\">\n            </ngx-charts-legend-entry>\n          </li>\n        </ul>\n      </div>\n    </div>\n  ",
+            styles: [".chart-legend{display:inline-block;padding:0;width:auto!important}.chart-legend .legend-title{white-space:nowrap;overflow:hidden;margin-left:10px;margin-bottom:5px;font-size:14px;font-weight:700}.chart-legend li,.chart-legend ul{padding:0;margin:0;list-style:none}.chart-legend .horizontal-legend li{display:inline-block}.chart-legend .legend-wrap{width:calc(100% - 10px)}.chart-legend .legend-labels{line-height:85%;list-style:none;text-align:left;float:left;width:100%;border-radius:3px;overflow-y:auto;overflow-x:hidden;white-space:nowrap;background:rgba(0,0,0,.05)}.chart-legend .legend-wrap.horizontal-legend{width:100%;margin-top:-35px}.chart-legend .legend-wrap.horizontal-legend .legend-labels{text-align:center}.chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label{display:inline-block;margin:4px}.chart-legend .legend-wrap.horizontal-legend .legend-labels .legend-label .legend-label-color{margin-left:0}.chart-legend .legend-label{cursor:pointer;font-size:90%;margin:4px 0;color:#afb7c8}.chart-legend .legend-label:hover{color:#000;-webkit-transition:.2s;-moz-transition:.2s;transition:.2s}.chart-legend .legend-label .legend-label-box{border-radius:3px;padding:4px 4px 0 4px}.chart-legend .legend-label .active .legend-label-text{color:#000}.chart-legend .legend-label-color{display:inline-block;height:15px;width:15px;margin-right:5px;margin-left:5px;color:#5b646b;border-radius:3px}.chart-legend .legend-label-text{display:inline-block;vertical-align:top;line-height:15px;font-size:12px;width:calc(100% - 20px);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.chart-legend .legend-title-text{vertical-align:bottom;display:inline-block;line-height:16px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}"],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush
         }),
-        __metadata("design:paramtypes", [typeof (_d = typeof ChangeDetectorRef !== "undefined" && ChangeDetectorRef) === "function" ? _d : Object])
+        __metadata("design:paramtypes", [typeof (_e = typeof ChangeDetectorRef !== "undefined" && ChangeDetectorRef) === "function" ? _e : Object])
     ], LegendComponent);
     return LegendComponent;
 }());
@@ -1358,7 +1470,7 @@ var ScaleLegendComponent = /** @class */ (function () {
         Component({
             selector: 'ngx-charts-scale-legend',
             template: "\n    <div\n      class=\"scale-legend\"\n      [class.horizontal-legend]=\"horizontal\"\n      [style.height.px]=\"horizontal ? undefined : height\"\n      [style.width.px]=\"width\">\n      <div class=\"scale-legend-label\">\n        <span>{{ valueRange[1].toLocaleString() }}</span>\n      </div>\n      <div\n        class=\"scale-legend-wrap\"\n        [style.background]=\"gradient\">\n      </div>\n      <div class=\"scale-legend-label\">\n        <span>{{ valueRange[0].toLocaleString() }}</span>\n      </div>\n    </div>\n  ",
-            styles: [".chart-legend{display:inline-block;padding:0;width:auto!important}.chart-legend .scale-legend{text-align:center;display:flex;flex-direction:column}.chart-legend .scale-legend-wrap{display:inline-block;flex:1;width:30px;border-radius:5px;margin:0 auto}.chart-legend .scale-legend-label{font-size:12px}.chart-legend .horizontal-legend.scale-legend{flex-direction:row}.chart-legend .horizontal-legend .scale-legend-wrap{width:auto;height:30px;margin:0 16px}"],
+            styles: [".chart-legend{display:inline-block;padding:0;width:auto!important}.chart-legend .scale-legend{text-align:center;display:flex;flex-direction:column}.chart-legend .scale-legend-wrap{display:inline-block;flex:1;width:30px;border-radius:5px;margin:0 auto}.chart-legend .scale-legend-label{font-size:12px}.chart-legend .horizontal-legend{text-align:center}.chart-legend .horizontal-legend.scale-legend{flex-direction:row}.chart-legend .horizontal-legend .scale-legend-wrap{width:auto;height:30px;margin:0 16px}"],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush
         }),
@@ -1370,6 +1482,7 @@ var ScaleLegendComponent = /** @class */ (function () {
 var LegendEntryComponent = /** @class */ (function () {
     function LegendEntryComponent() {
         this.isActive = false;
+        this.isHidden = false;
         this.select = new EventEmitter();
         this.activate = new EventEmitter();
         this.deactivate = new EventEmitter();
@@ -1388,6 +1501,10 @@ var LegendEntryComponent = /** @class */ (function () {
     LegendEntryComponent.prototype.onMouseLeave = function () {
         this.deactivate.emit({ name: this.label });
     };
+    LegendEntryComponent.prototype.onClick = function ($event) {
+        this.select.emit(this.formattedLabel);
+        this.toggle.emit({ name: this.label });
+    };
     var _a, _b, _c, _d;
     __decorate([
         Input(),
@@ -1405,6 +1522,10 @@ var LegendEntryComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], LegendEntryComponent.prototype, "isActive", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], LegendEntryComponent.prototype, "isHidden", void 0);
     __decorate([
         Output(),
         __metadata("design:type", typeof (_a = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _a : Object)
@@ -1436,7 +1557,7 @@ var LegendEntryComponent = /** @class */ (function () {
     LegendEntryComponent = __decorate([
         Component({
             selector: 'ngx-charts-legend-entry',
-            template: "\n    <span \n      [title]=\"formattedLabel\"\n      tabindex=\"-1\"\n      [class.active]=\"isActive\"\n      (click)=\"select.emit(formattedLabel)\">\n      <span\n        class=\"legend-label-color\"\n        [style.background-color]=\"color\"\n        (click)=\"toggle.emit(formattedLabel)\">\n      </span>\n      <span class=\"legend-label-text\">\n        {{trimmedLabel}}\n      </span>\n    </span>\n  ",
+            template: "\n    <span \n      [title]=\"formattedLabel\"\n      tabindex=\"-1\"\n      class=\"legend-label-box\"\n      [class.active]=\"isActive\"\n      [class.hiddenSeries]=\"isHidden\"\n      (click)=\"onClick($event)\">\n      <span\n        class=\"legend-label-color\"\n        [style.background-color]=\"color\">\n      </span>\n      <span class=\"legend-label-text\">\n        {{trimmedLabel}}\n      </span>\n    </span>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush
         })
     ], LegendEntryComponent);
@@ -1860,6 +1981,7 @@ var BaseChartComponent = /** @class */ (function () {
         this.scheme = 'cool';
         this.schemeType = 'ordinal';
         this.animations = true;
+        this.dateFormatter = function (dateName) { return dateName.toLocaleDateString(); };
         this.select = new EventEmitter();
     }
     BaseChartComponent.prototype.ngAfterViewInit = function () {
@@ -1885,12 +2007,20 @@ var BaseChartComponent = /** @class */ (function () {
         else {
             this.results = [];
         }
+        var dims = (!this.view || this.view[0] === null || this.view[1] === null) ? this.getContainerDims() : undefined;
         if (this.view) {
             this.width = this.view[0];
             this.height = this.view[1];
+            if (dims) {
+                if (this.width === null) {
+                    this.width = dims.width;
+                }
+                if (this.height === null) {
+                    this.height = dims.height;
+                }
+            }
         }
         else {
-            var dims = this.getContainerDims();
             if (dims) {
                 this.width = dims.width;
                 this.height = dims.height;
@@ -1932,13 +2062,13 @@ var BaseChartComponent = /** @class */ (function () {
         for (var i = 0; i < this.results.length; i++) {
             var g = this.results[i];
             if (g.name instanceof Date) {
-                g.name = g.name.toLocaleDateString();
+                g.name = this.dateFormatter(g.name);
             }
             if (g.series) {
                 for (var j = 0; j < g.series.length; j++) {
                     var d = g.series[j];
                     if (d.name instanceof Date) {
-                        d.name = d.name.toLocaleDateString();
+                        d.name = this.dateFormatter(d.name);
                     }
                 }
             }
@@ -2019,6 +2149,10 @@ var BaseChartComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], BaseChartComponent.prototype, "animations", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BaseChartComponent.prototype, "dateFormatter", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
@@ -2119,6 +2253,10 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.tickArguments = [5];
         this.tickStroke = '#ccc';
         this.showGridLines = false;
+        this.gridLineOffset = 0;
+        this.tickScaledWidth = 100;
+        this.tickWidth = 20;
+        this.xAxisPositionReversed = false;
         this.dimensionsChanged = new EventEmitter();
         this.verticalSpacing = 20;
         this.rotateLabels = false;
@@ -2129,6 +2267,8 @@ var XAxisTicksComponent = /** @class */ (function () {
         this.maxTicksLength = 0;
         this.maxAllowedLength = 16;
         this.height = 0;
+        this.gridLineY1 = 0;
+        this.gridLineY2 = 0;
         this.trimLabel = trimLabel;
     }
     XAxisTicksComponent.prototype.ngOnChanges = function (changes) {
@@ -2141,10 +2281,21 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent.prototype.updateDims = function () {
         var _this = this;
         var height = parseInt(this.ticksElement.nativeElement.getBoundingClientRect().height, 10);
+        this.updateGridLines(height);
         if (height !== this.height) {
             this.height = height;
             this.dimensionsChanged.emit({ height: height });
             setTimeout(function () { return _this.updateDims(); });
+        }
+    };
+    XAxisTicksComponent.prototype.updateGridLines = function (height) {
+        if (this.xAxisPositionReversed) {
+            this.gridLineY1 = height;
+            this.gridLineY2 = height + this.gridLineHeight + this.gridLineOffset - 40;
+        }
+        else {
+            this.gridLineY1 = -this.gridLineHeight;
+            this.gridLineY2 = 0;
         }
     };
     XAxisTicksComponent.prototype.update = function () {
@@ -2202,8 +2353,8 @@ var XAxisTicksComponent = /** @class */ (function () {
     };
     XAxisTicksComponent.prototype.getTicks = function () {
         var ticks;
-        var maxTicks = this.getMaxTicks(20);
-        var maxScaleTicks = this.getMaxTicks(100);
+        var maxTicks = this.getMaxTicks(this.tickWidth);
+        var maxScaleTicks = this.getMaxTicks(this.tickScaledWidth);
         if (this.tickValues) {
             ticks = this.tickValues;
         }
@@ -2223,7 +2374,12 @@ var XAxisTicksComponent = /** @class */ (function () {
         return 'translate(' + this.adjustedScale(tick) + ',' + this.verticalSpacing + ')';
     };
     XAxisTicksComponent.prototype.gridLineTransform = function () {
-        return "translate(0," + (-this.verticalSpacing - 5) + ")";
+        if (this.xAxisPositionReversed) {
+            return 'translate(0, 0)';
+        }
+        else {
+            return "translate(0," + (-this.verticalSpacing - 5) + ")";
+        }
     };
     var _a;
     __decorate([
@@ -2261,7 +2417,23 @@ var XAxisTicksComponent = /** @class */ (function () {
     __decorate([
         Input(),
         __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "gridLineOffset", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
     ], XAxisTicksComponent.prototype, "width", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickScaledWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisTicksComponent.prototype, "tickWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], XAxisTicksComponent.prototype, "xAxisPositionReversed", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
@@ -2273,7 +2445,7 @@ var XAxisTicksComponent = /** @class */ (function () {
     XAxisTicksComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-x-axis-ticks]',
-            template: "\n    <svg:g #ticksel>\n      <svg:g *ngFor=\"let tick of ticks\" class=\"tick\"\n        [attr.transform]=\"tickTransform(tick)\">\n        <title>{{tickFormat(tick)}}</title>\n        <svg:text\n          stroke-width=\"0.01\"\n          [attr.text-anchor]=\"textAnchor\"\n          [attr.transform]=\"textTransform\"\n          [style.font-size]=\"'12px'\">\n          {{trimLabel(tickFormat(tick))}}\n        </svg:text>\n      </svg:g>\n    </svg:g>\n\n    <svg:g *ngFor=\"let tick of ticks\"\n      [attr.transform]=\"tickTransform(tick)\">\n      <svg:g *ngIf=\"showGridLines\"\n        [attr.transform]=\"gridLineTransform()\">\n        <svg:line\n          class=\"gridline-path gridline-path-vertical\"\n          [attr.y1]=\"-gridLineHeight\"\n          y2=\"0\" />\n      </svg:g>\n    </svg:g>\n  ",
+            template: "\n    <svg:g #ticksel>\n      <svg:g *ngFor=\"let tick of ticks\" class=\"tick\"\n        [attr.transform]=\"tickTransform(tick)\">\n        <title>{{tickFormat(tick)}}</title>\n        <svg:text\n          stroke-width=\"0.01\"\n          [attr.text-anchor]=\"textAnchor\"\n          [attr.transform]=\"textTransform\"\n          [style.font-size]=\"'12px'\">\n          {{trimLabel(tickFormat(tick))}}\n        </svg:text>\n      </svg:g>\n    </svg:g>\n\n    <svg:g *ngFor=\"let tick of ticks\"\n      [attr.transform]=\"tickTransform(tick)\">\n      <svg:g *ngIf=\"showGridLines\"\n        [attr.transform]=\"gridLineTransform()\">\n        <svg:line\n          class=\"gridline-path gridline-path-vertical\"\n          [attr.y1]=\"gridLineY1\"\n          [attr.y2]=\"gridLineY2\"\n        />\n      </svg:g>\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush
         }),
         __metadata("design:paramtypes", [])
@@ -2283,6 +2455,7 @@ var XAxisTicksComponent = /** @class */ (function () {
 
 var XAxisComponent = /** @class */ (function () {
     function XAxisComponent() {
+        this.xAxisPositionReversed = false;
         this.showGridLines = false;
         this.xOrient = 'bottom';
         this.xAxisOffset = 0;
@@ -2299,7 +2472,8 @@ var XAxisComponent = /** @class */ (function () {
         this.update();
     };
     XAxisComponent.prototype.update = function () {
-        this.transform = "translate(0," + (this.xAxisOffset + this.padding + this.dims.height) + ")";
+        var calculatedOffset = this.xAxisPositionReversed ? this.xAxisOffset + this.padding : this.xAxisOffset + this.padding + this.dims.height;
+        this.transform = "translate(0," + calculatedOffset + ")";
         if (typeof this.xAxisTickCount !== 'undefined') {
             this.tickArguments = [this.xAxisTickCount];
         }
@@ -2320,6 +2494,10 @@ var XAxisComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], XAxisComponent.prototype, "xScale", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisComponent.prototype, "xAxisPositionReversed", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Object)
@@ -2361,6 +2539,10 @@ var XAxisComponent = /** @class */ (function () {
         __metadata("design:type", Number)
     ], XAxisComponent.prototype, "xAxisOffset", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], XAxisComponent.prototype, "tickWidth", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", Object)
     ], XAxisComponent.prototype, "dimensionsChanged", void 0);
@@ -2371,7 +2553,7 @@ var XAxisComponent = /** @class */ (function () {
     XAxisComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-x-axis]',
-            template: "\n    <svg:g\n      [attr.class]=\"xAxisClassName\"\n      [attr.transform]=\"transform\">\n      <svg:g ngx-charts-x-axis-ticks\n        *ngIf=\"xScale\"\n        [tickFormatting]=\"tickFormatting\"\n        [tickArguments]=\"tickArguments\"\n        [tickStroke]=\"tickStroke\"\n        [scale]=\"xScale\"\n        [orient]=\"xOrient\"\n        [showGridLines]=\"showGridLines\"\n        [gridLineHeight]=\"dims.height\"\n        [width]=\"dims.width\"\n        [tickValues]=\"ticks\"\n        (dimensionsChanged)=\"emitTicksHeight($event)\"\n      />\n      <svg:g ngx-charts-axis-label\n        *ngIf=\"showLabel\"\n        [label]=\"labelText\"\n        [offset]=\"labelOffset\"\n        [orient]=\"'bottom'\"\n        [height]=\"dims.height\"\n        [width]=\"dims.width\">\n      </svg:g>\n    </svg:g>\n  ",
+            template: "\n    <svg:g\n      [attr.class]=\"xAxisClassName\"\n      [attr.transform]=\"transform\">\n      <svg:g ngx-charts-x-axis-ticks\n        *ngIf=\"xScale\"\n        [tickFormatting]=\"tickFormatting\"\n        [tickArguments]=\"tickArguments\"\n        [tickStroke]=\"tickStroke\"\n        [scale]=\"xScale\"\n        [orient]=\"xOrient\"\n        [showGridLines]=\"showGridLines\"\n        [xAxisPositionReversed]=\"xAxisPositionReversed\"\n        [gridLineHeight]=\"dims.height\"\n        [gridLineOffset]=\"dims.yOffset\"\n        [width]=\"dims.width\"\n        [tickWidth]=\"tickWidth\"\n        [tickValues]=\"ticks\"\n        (dimensionsChanged)=\"emitTicksHeight($event)\"\n      />\n      <svg:g ngx-charts-axis-label\n        *ngIf=\"showLabel\"\n        [label]=\"labelText\"\n        [offset]=\"labelOffset\"\n        [orient]=\"'bottom'\"\n        [height]=\"dims.height\"\n        [width]=\"dims.width\">\n      </svg:g>\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush
         })
     ], XAxisComponent);
@@ -2902,6 +3084,7 @@ var CircleSeriesComponent = /** @class */ (function () {
     function CircleSeriesComponent() {
         this.type = 'standard';
         this.tooltipDisabled = false;
+        this.tooltipCssClass = '';
         this.select = new EventEmitter();
         this.activate = new EventEmitter();
         this.deactivate = new EventEmitter();
@@ -3091,6 +3274,10 @@ var CircleSeriesComponent = /** @class */ (function () {
         __metadata("design:type", typeof (_b = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _b : Object)
     ], CircleSeriesComponent.prototype, "tooltipTemplate", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CircleSeriesComponent.prototype, "tooltipCssClass", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", Object)
     ], CircleSeriesComponent.prototype, "select", void 0);
@@ -3105,7 +3292,7 @@ var CircleSeriesComponent = /** @class */ (function () {
     CircleSeriesComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-circle-series]',
-            template: "\n    <svg:g *ngIf=\"circle\">\n      <defs>\n        <svg:g ngx-charts-svg-linear-gradient\n          orientation=\"vertical\"\n          [name]=\"gradientId\"\n          [stops]=\"circle.gradientStops\"\n        />\n      </defs>\n      <svg:rect\n        *ngIf=\"barVisible && type === 'standard'\"\n        [@animationState]=\"'active'\"\n        [attr.x]=\"circle.cx - circle.radius\"\n        [attr.y]=\"circle.cy\"\n        [attr.width]=\"circle.radius * 2\"\n        [attr.height]=\"circle.height\"\n        [attr.fill]=\"gradientFill\"\n        class=\"tooltip-bar\"\n      />\n      <svg:g ngx-charts-circle\n        class=\"circle\"\n        [cx]=\"circle.cx\"\n        [cy]=\"circle.cy\"\n        [r]=\"circle.radius\"\n        [fill]=\"circle.color\"\n        [class.active]=\"isActive({name: circle.seriesName})\"\n        [pointerEvents]=\"circle.value === 0 ? 'none': 'all'\"\n        [data]=\"circle.value\"\n        [classNames]=\"circle.classNames\"\n        (select)=\"onClick($event, circle.label)\"\n        (activate)=\"activateCircle()\"\n        (deactivate)=\"deactivateCircle()\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipPlacement]=\"'top'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipTitle]=\"tooltipTemplate ? undefined : getTooltipText(circle)\"\n        [tooltipTemplate]=\"tooltipTemplate\"\n        [tooltipContext]=\"circle.data\"\n      />\n    </svg:g>\n  ",
+            template: "\n    <svg:g *ngIf=\"circle\">\n      <defs>\n        <svg:g ngx-charts-svg-linear-gradient\n          orientation=\"vertical\"\n          [name]=\"gradientId\"\n          [stops]=\"circle.gradientStops\"\n        />\n      </defs>\n      <svg:rect\n        *ngIf=\"barVisible && type === 'standard'\"\n        [@animationState]=\"'active'\"\n        [attr.x]=\"circle.cx - circle.radius\"\n        [attr.y]=\"circle.cy\"\n        [attr.width]=\"circle.radius * 2\"\n        [attr.height]=\"circle.height\"\n        [attr.fill]=\"gradientFill\"\n        class=\"tooltip-bar\"\n      />\n      <svg:g ngx-charts-circle\n        class=\"circle\"\n        [cx]=\"circle.cx\"\n        [cy]=\"circle.cy\"\n        [r]=\"circle.radius\"\n        [fill]=\"circle.color\"\n        [class.active]=\"isActive({name: circle.seriesName})\"\n        [pointerEvents]=\"circle.value === 0 ? 'none': 'all'\"\n        [data]=\"circle.value\"\n        [classNames]=\"circle.classNames\"\n        (select)=\"onClick($event, circle.label)\"\n        (activate)=\"activateCircle()\"\n        (deactivate)=\"deactivateCircle()\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipCssClass]=\"tooltipCssClass\"\n        [tooltipPlacement]=\"'top'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipTitle]=\"tooltipTemplate ? undefined : getTooltipText(circle)\"\n        [tooltipTemplate]=\"tooltipTemplate\"\n        [tooltipContext]=\"circle.data\"\n      />\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [
@@ -3263,7 +3450,7 @@ var GridPanelSeriesComponent = /** @class */ (function () {
     };
     GridPanelSeriesComponent.prototype.getGridPanels = function () {
         var _this = this;
-        return this.data.map(function (d, i) {
+        return this.data.map(function (d) {
             var offset;
             var width;
             var height;
@@ -3452,6 +3639,9 @@ var Timeline = /** @class */ (function () {
         this.initialized = false;
         this.element = element.nativeElement;
     }
+    Timeline.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     Timeline.prototype.ngOnChanges = function (changes) {
         this.update();
         if (!this.initialized) {
@@ -3477,6 +3667,9 @@ var Timeline = /** @class */ (function () {
         var values = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var results = _a[_i];
+            if (this.isHidden({ name: results.name })) {
+                continue;
+            }
             for (var _b = 0, _c = results.series; _b < _c.length; _b++) {
                 var d = _c[_b];
                 if (!values.includes(d.name)) {
@@ -3603,6 +3796,10 @@ var Timeline = /** @class */ (function () {
         Input(),
         __metadata("design:type", Number)
     ], Timeline.prototype, "height", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], Timeline.prototype, "hiddenEntries", void 0);
     __decorate([
         Output(),
         __metadata("design:type", Object)
@@ -3767,12 +3964,19 @@ var TooltipArea = /** @class */ (function () {
         this.anchorValues = [];
         this.showPercentage = false;
         this.tooltipDisabled = false;
+        this.tooltipCssClass = '';
         this.hover = new EventEmitter();
     }
+    TooltipArea.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     TooltipArea.prototype.getValues = function (xVal) {
         var results = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var group = _a[_i];
+            if (this.isHidden({ name: group.name })) {
+                continue;
+            }
             var item = group.series.find(function (d) { return d.name.toString() === xVal.toString(); });
             var groupName = group.name;
             if (groupName instanceof Date) {
@@ -3807,6 +4011,15 @@ var TooltipArea = /** @class */ (function () {
         }
         return results;
     };
+    TooltipArea.prototype.calculateAnchor = function (data) {
+        var position = data.position * this.dims.width / data.width;
+        var closestIndex = this.findClosestPointIndex(position);
+        var closestPoint = this.xSet[closestIndex];
+        var anchorPos = this.xScale(closestPoint);
+        anchorPos = Math.max(0, anchorPos);
+        anchorPos = Math.min(this.dims.width, anchorPos);
+        return anchorPos;
+    };
     TooltipArea.prototype.mouseMove = function (event$$1) {
         var xPos = event$$1.pageX - event$$1.target.getBoundingClientRect().left;
         var closestIndex = this.findClosestPointIndex(xPos);
@@ -3820,6 +4033,8 @@ var TooltipArea = /** @class */ (function () {
             this.tooltipAnchor.nativeElement.dispatchEvent(ev);
             this.anchorOpacity = 0.7;
             this.hover.emit({
+                position: xPos,
+                width: this.dims.width,
                 value: closestPoint
             });
             this.showTooltip();
@@ -3934,6 +4149,18 @@ var TooltipArea = /** @class */ (function () {
         __metadata("design:type", typeof (_a = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _a : Object)
     ], TooltipArea.prototype, "tooltipTemplate", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], TooltipArea.prototype, "tooltipCssClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], TooltipArea.prototype, "hiddenEntries", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], TooltipArea.prototype, "syncedHoveredVertical", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", Object)
     ], TooltipArea.prototype, "hover", void 0);
@@ -3944,7 +4171,7 @@ var TooltipArea = /** @class */ (function () {
     TooltipArea = __decorate([
         Component({
             selector: 'g[ngx-charts-tooltip-area]',
-            template: "\n    <svg:g>\n      <svg:rect\n        class=\"tooltip-area\"\n        [attr.x]=\"0\"\n        y=\"0\"\n        [attr.width]=\"dims.width\"\n        [attr.height]=\"dims.height\"\n        style=\"opacity: 0; cursor: 'auto';\"\n        (mousemove)=\"mouseMove($event)\"\n        (mouseleave)=\"hideTooltip()\"\n      />\n      <xhtml:ng-template #defaultTooltipTemplate let-model=\"model\">\n        <xhtml:div class=\"area-tooltip-container\">\n          <xhtml:div\n            *ngFor=\"let tooltipItem of model\"\n            class=\"tooltip-item\">\n            <span\n              class=\"tooltip-item-color\"\n              [style.background-color]=\"tooltipItem.color\">\n            </span>\n            {{getToolTipText(tooltipItem)}}\n          </xhtml:div>\n        </xhtml:div>\n      </xhtml:ng-template>\n      <svg:rect\n        #tooltipAnchor\n        [@animationState]=\"anchorOpacity !== 0 ? 'active' : 'inactive'\"\n        class=\"tooltip-anchor\"\n        [attr.x]=\"anchorPos\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.opacity]=\"anchorOpacity\"\n        [style.pointer-events]=\"'none'\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipPlacement]=\"'right'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipSpacing]=\"15\"\n        [tooltipTemplate]=\"tooltipTemplate ? tooltipTemplate: defaultTooltipTemplate\"\n        [tooltipContext]=\"anchorValues\"\n        [tooltipImmediateExit]=\"true\"\n      />\n    </svg:g>\n  ",
+            template: "\n    <svg:g>\n      <svg:rect\n        class=\"tooltip-area\"\n        [attr.x]=\"0\"\n        y=\"0\"\n        [attr.width]=\"dims.width\"\n        [attr.height]=\"dims.height\"\n        style=\"opacity: 0; cursor: 'auto';\"\n        (mousemove)=\"mouseMove($event)\"\n        (mouseleave)=\"hideTooltip()\"\n      />\n      <xhtml:ng-template #defaultTooltipTemplate let-model=\"model\">\n        <xhtml:div class=\"area-tooltip-container\">\n          <xhtml:div\n            *ngFor=\"let tooltipItem of model\"\n            class=\"tooltip-item\">\n            <span\n              class=\"tooltip-item-color\"\n              [style.background-color]=\"tooltipItem.color\">\n            </span>\n            {{getToolTipText(tooltipItem)}}\n          </xhtml:div>\n        </xhtml:div>\n      </xhtml:ng-template>\n      <svg:rect\n        class=\"tooltip-anchor\"\n        [attr.x]=\"calculateAnchor(syncedHoveredVertical)\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.pointer-events]=\"'none'\"\n        *ngIf=\"syncedHoveredVertical && anchorOpacity == 0\"\n      />\n      <svg:rect\n        #tooltipAnchor\n        [@animationState]=\"anchorOpacity !== 0 ? 'active' : 'inactive'\"\n        class=\"tooltip-anchor\"\n        [attr.x]=\"anchorPos\"\n        y=\"0\"\n        [attr.width]=\"1\"\n        [attr.height]=\"dims.height\"\n        [style.opacity]=\"anchorOpacity\"\n        [style.pointer-events]=\"'none'\"\n        ngx-tooltip\n        [tooltipDisabled]=\"tooltipDisabled\"\n        [tooltipCssClass]=\"tooltipCssClass\"\n        [tooltipPlacement]=\"'right'\"\n        [tooltipType]=\"'tooltip'\"\n        [tooltipSpacing]=\"15\"\n        [tooltipTemplate]=\"tooltipTemplate ? tooltipTemplate: defaultTooltipTemplate\"\n        [tooltipContext]=\"anchorValues\"\n        [tooltipImmediateExit]=\"true\"\n      />\n    </svg:g>\n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [
@@ -4210,10 +4437,11 @@ var ChartCommonModule = /** @class */ (function () {
 }());
 
 function calculateViewDimensions(_a) {
-    var width = _a.width, height = _a.height, margins = _a.margins, _b = _a.showXAxis, showXAxis = _b === void 0 ? false : _b, _c = _a.showYAxis, showYAxis = _c === void 0 ? false : _c, _d = _a.xAxisHeight, xAxisHeight = _d === void 0 ? 0 : _d, _e = _a.yAxisWidth, yAxisWidth = _e === void 0 ? 0 : _e, _f = _a.showXLabel, showXLabel = _f === void 0 ? false : _f, _g = _a.showYLabel, showYLabel = _g === void 0 ? false : _g, _h = _a.showLegend, showLegend = _h === void 0 ? false : _h, _j = _a.legendType, legendType = _j === void 0 ? 'ordinal' : _j, _k = _a.legendPosition, legendPosition = _k === void 0 ? 'right' : _k, _l = _a.columns, columns = _l === void 0 ? 12 : _l;
+    var width = _a.width, height = _a.height, margins = _a.margins, _b = _a.showXAxis, showXAxis = _b === void 0 ? false : _b, _c = _a.showYAxis, showYAxis = _c === void 0 ? false : _c, _d = _a.xAxisHeight, xAxisHeight = _d === void 0 ? 0 : _d, _e = _a.yAxisWidth, yAxisWidth = _e === void 0 ? 0 : _e, _f = _a.showXLabel, showXLabel = _f === void 0 ? false : _f, _g = _a.showYLabel, showYLabel = _g === void 0 ? false : _g, _h = _a.showLegend, showLegend = _h === void 0 ? false : _h, _j = _a.legendType, legendType = _j === void 0 ? 'ordinal' : _j, _k = _a.legendPosition, legendPosition = _k === void 0 ? 'right' : _k, _l = _a.xAxisPositionReversed, xAxisPositionReversed = _l === void 0 ? false : _l, _m = _a.columns, columns = _m === void 0 ? 12 : _m;
     var xOffset = margins[3];
     var chartWidth = width;
     var chartHeight = height - margins[0] - margins[2];
+    var yOffset = 0;
     if (showLegend && legendPosition === 'right') {
         if (legendType === 'ordinal') {
             columns -= 2;
@@ -4222,15 +4450,24 @@ function calculateViewDimensions(_a) {
             columns -= 1;
         }
     }
+    if (showLegend && legendPosition === 'below') {
+        chartHeight -= 25;
+    }
     chartWidth = chartWidth * columns / 12;
     chartWidth = chartWidth - margins[1] - margins[3];
     if (showXAxis) {
         chartHeight -= 5;
         chartHeight -= xAxisHeight;
+        if (xAxisPositionReversed) {
+            yOffset += xAxisHeight;
+        }
         if (showXLabel) {
             // text height + spacing between axis label and tick labels
             var offset = 25 + 5;
             chartHeight -= offset;
+            if (xAxisPositionReversed) {
+                yOffset += offset;
+            }
         }
     }
     if (showYAxis) {
@@ -4248,48 +4485,11 @@ function calculateViewDimensions(_a) {
     chartWidth = Math.max(0, chartWidth);
     chartHeight = Math.max(0, chartHeight);
     return {
+        yOffset: ~~yOffset,
         width: ~~chartWidth,
         height: ~~chartHeight,
         xOffset: ~~xOffset
     };
-}
-
-/**
- * Based on the data, return an array with unique values.
- *
- * @export
- * @returns array
- * @param results
- */
-function getUniqueXDomainValues(results) {
-    var valueSet = new Set();
-    for (var _i = 0, results_1 = results; _i < results_1.length; _i++) {
-        var result = results_1[_i];
-        for (var _a = 0, _b = result.series; _a < _b.length; _a++) {
-            var d = _b[_a];
-            valueSet.add(d.name);
-        }
-    }
-    return Array.from(valueSet);
-}
-/**
- * Get the scaleType of enumerable of values.
- * @param values
- * @returns {string} 'time', 'linear' or 'ordinal'
- */
-function getScaleType(values, checkDateType) {
-    if (checkDateType === void 0) { checkDateType = true; }
-    if (checkDateType) {
-        var allDates = values.every(function (value) { return value instanceof Date; });
-        if (allDates) {
-            return 'time';
-        }
-    }
-    var allNumbers = values.every(function (value) { return typeof value === 'number'; });
-    if (allNumbers) {
-        return 'linear';
-    }
-    return 'ordinal';
 }
 
 var AreaChartComponent = /** @class */ (function (_super) {
@@ -4689,6 +4889,10 @@ var AreaChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", typeof (_d = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _d : Object)
     ], AreaChartComponent.prototype, "seriesTooltipTemplate", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], AreaChartComponent.prototype, "margin", void 0);
+    __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", []),
@@ -5077,6 +5281,10 @@ var AreaChartNormalizedComponent = /** @class */ (function (_super) {
         ContentChild('seriesTooltipTemplate'),
         __metadata("design:type", typeof (_d = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _d : Object)
     ], AreaChartNormalizedComponent.prototype, "seriesTooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], AreaChartNormalizedComponent.prototype, "margin", void 0);
     __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
@@ -5498,6 +5706,10 @@ var AreaChartStackedComponent = /** @class */ (function (_super) {
         ContentChild('seriesTooltipTemplate'),
         __metadata("design:type", typeof (_d = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _d : Object)
     ], AreaChartStackedComponent.prototype, "seriesTooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], AreaChartStackedComponent.prototype, "margin", void 0);
     __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
@@ -6203,6 +6415,10 @@ var BarHorizontalComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarHorizontalComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarHorizontalComponent.prototype, "margin", void 0);
     BarHorizontalComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-horizontal',
@@ -6532,6 +6748,10 @@ var BarHorizontal2DComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarHorizontal2DComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarHorizontal2DComponent.prototype, "margin", void 0);
     BarHorizontal2DComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-horizontal-2d',
@@ -6809,6 +7029,10 @@ var BarHorizontalNormalizedComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarHorizontalNormalizedComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarHorizontalNormalizedComponent.prototype, "margin", void 0);
     BarHorizontalNormalizedComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-horizontal-normalized',
@@ -7142,6 +7366,10 @@ var BarHorizontalStackedComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarHorizontalStackedComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarHorizontalStackedComponent.prototype, "margin", void 0);
     BarHorizontalStackedComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-horizontal-stacked',
@@ -7427,6 +7655,10 @@ var BarVerticalComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarVerticalComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], BarVerticalComponent.prototype, "margin", void 0);
     BarVerticalComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-vertical',
@@ -7764,6 +7996,10 @@ var BarVertical2DComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarVertical2DComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarVertical2DComponent.prototype, "margin", void 0);
     BarVertical2DComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-vertical-2d',
@@ -8041,6 +8277,10 @@ var BarVerticalNormalizedComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarVerticalNormalizedComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarVerticalNormalizedComponent.prototype, "margin", void 0);
     BarVerticalNormalizedComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-vertical-normalized',
@@ -8071,12 +8311,16 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         _this.legend = false;
         _this.legendTitle = 'Legend';
         _this.legendPosition = 'right';
+        _this.xAxisPositionReversed = false;
         _this.tooltipDisabled = false;
-        _this.showGridLines = true;
+        _this.tooltipCssClass = '';
+        _this.xShowGridLines = false;
+        _this.yShowGridLines = true;
         _this.activeEntries = [];
         _this.barPadding = 8;
         _this.roundDomains = false;
         _this.showDataLabel = false;
+        _this.barAnimations = true;
         _this.activate = new EventEmitter();
         _this.deactivate = new EventEmitter();
         _this.margin = [10, 20, 10, 20];
@@ -8090,11 +8334,11 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         if (!this.showDataLabel) {
             this.dataLabelMaxHeight = { negative: 0, positive: 0 };
         }
-        this.margin = [10 + this.dataLabelMaxHeight.positive, 20, 10 + this.dataLabelMaxHeight.negative, 20];
+        this.chartMargin = [this.margin[0] + this.dataLabelMaxHeight.positive, this.margin[1], this.margin[2] + this.dataLabelMaxHeight.negative, this.margin[3]];
         this.dims = calculateViewDimensions({
             width: this.width,
             height: this.height,
-            margins: this.margin,
+            margins: this.chartMargin,
             showXAxis: this.xAxis,
             showYAxis: this.yAxis,
             xAxisHeight: this.xAxisHeight,
@@ -8103,7 +8347,8 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
             showYLabel: this.showYAxisLabel,
             showLegend: this.legend,
             legendType: this.schemeType,
-            legendPosition: this.legendPosition
+            legendPosition: this.legendPosition,
+            xAxisPositionReversed: this.xAxisPositionReversed,
         });
         if (this.showDataLabel) {
             this.dims.height -= this.dataLabelMaxHeight.negative;
@@ -8116,7 +8361,7 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         this.yScale = this.getYScale();
         this.setColors();
         this.legendOptions = this.getLegendOptions();
-        this.transform = "translate(" + this.dims.xOffset + " , " + (this.margin[0] + this.dataLabelMaxHeight.negative) + ")";
+        this.transform = "translate(" + this.dims.xOffset + " , " + (this.chartMargin[0] + this.dataLabelMaxHeight.negative) + ")";
     };
     BarVerticalStackedComponent.prototype.getGroupDomain = function () {
         var domain = [];
@@ -8292,6 +8537,10 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
     __decorate([
         Input(),
         __metadata("design:type", Object)
+    ], BarVerticalStackedComponent.prototype, "xAxisPositionReversed", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
     ], BarVerticalStackedComponent.prototype, "yAxis", void 0);
     __decorate([
         Input(),
@@ -8315,12 +8564,20 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
     ], BarVerticalStackedComponent.prototype, "tooltipDisabled", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", String)
+    ], BarVerticalStackedComponent.prototype, "tooltipCssClass", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Boolean)
     ], BarVerticalStackedComponent.prototype, "gradient", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Boolean)
-    ], BarVerticalStackedComponent.prototype, "showGridLines", void 0);
+    ], BarVerticalStackedComponent.prototype, "xShowGridLines", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], BarVerticalStackedComponent.prototype, "yShowGridLines", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Array)
@@ -8366,6 +8623,18 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         __metadata("design:type", Object)
     ], BarVerticalStackedComponent.prototype, "dataLabelFormatting", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Number)
+    ], BarVerticalStackedComponent.prototype, "xAxisTickMax", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Number)
+    ], BarVerticalStackedComponent.prototype, "barMaxWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarVerticalStackedComponent.prototype, "barAnimations", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", typeof (_a = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _a : Object)
     ], BarVerticalStackedComponent.prototype, "activate", void 0);
@@ -8377,10 +8646,14 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BarVerticalStackedComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BarVerticalStackedComponent.prototype, "margin", void 0);
     BarVerticalStackedComponent = __decorate([
         Component({
             selector: 'ngx-charts-bar-vertical-stacked',
-            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [animations]=\"animations\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\"\n      (legendLabelClick)=\"onClick($event)\">\n      <svg:g [attr.transform]=\"transform\" class=\"bar-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          [xAxisOffset]=\"dataLabelMaxHeight.negative\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g\n          *ngFor=\"let group of results; let index = index; trackBy:trackBy\"\n          [@animationState]=\"'active'\"\n          [attr.transform]=\"groupTransform(group)\">\n          <svg:g ngx-charts-series-vertical\n            type=\"stacked\"\n            [xScale]=\"xScale\"\n            [yScale]=\"yScale\"\n            [activeEntries]=\"activeEntries\"\n            [colors]=\"colors\"\n            [series]=\"group.series\"\n            [dims]=\"dims\"\n            [gradient]=\"gradient\"\n            [tooltipDisabled]=\"tooltipDisabled\"\n            [tooltipTemplate]=\"tooltipTemplate\"\n            [showDataLabel]=\"showDataLabel\"\n            [dataLabelFormatting]=\"dataLabelFormatting\"\n            [seriesName]=\"group.name\"\n            [animations]=\"animations\"\n            (select)=\"onClick($event, group)\"\n            (activate)=\"onActivate($event, group)\"\n            (deactivate)=\"onDeactivate($event, group)\"\n            (dataLabelHeightChanged)=\"onDataLabelMaxHeightChanged($event, index)\"\n          />\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
+            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [animations]=\"animations\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\"\n      (legendLabelClick)=\"onClick($event)\">\n      <svg:g [attr.transform]=\"transform\" class=\"bar-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"xShowGridLines\"\n          [xAxisPositionReversed]=\"xAxisPositionReversed\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          [tickWidth]=\"xAxisTickMax\"\n          [xAxisOffset]=\"dataLabelMaxHeight.negative\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"yShowGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g\n          *ngFor=\"let group of results; let index = index; trackBy:trackBy\"\n          [@animationState]=\"'active'\"\n          [attr.transform]=\"groupTransform(group)\">\n          <svg:g ngx-charts-series-vertical\n            type=\"stacked\"\n            [xScale]=\"xScale\"\n            [maxWidth]=\"barMaxWidth\"\n            [yScale]=\"yScale\"\n            [activeEntries]=\"activeEntries\"\n            [colors]=\"colors\"\n            [series]=\"group.series\"\n            [dims]=\"dims\"\n            [gradient]=\"gradient\"\n            [tooltipDisabled]=\"tooltipDisabled\"\n            [tooltipTemplate]=\"tooltipTemplate\"\n            [tooltipCssClass]=\"tooltipCssClass\"\n            [showDataLabel]=\"showDataLabel\"\n            [dataLabelFormatting]=\"dataLabelFormatting\"\n            [seriesName]=\"group.name\"\n            [animations]=\"barAnimations\"\n            (select)=\"onClick($event, group)\"\n            (activate)=\"onActivate($event, group)\"\n            (deactivate)=\"onDeactivate($event, group)\"\n            (dataLabelHeightChanged)=\"onDataLabelMaxHeightChanged($event, index)\"\n          />\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
             styles: [".ngx-charts{float:left;overflow:visible}.ngx-charts .arc,.ngx-charts .bar,.ngx-charts .circle{cursor:pointer}.ngx-charts .arc.active,.ngx-charts .arc:hover,.ngx-charts .bar.active,.ngx-charts .bar:hover,.ngx-charts .card.active,.ngx-charts .card:hover,.ngx-charts .cell.active,.ngx-charts .cell:hover{opacity:.8;transition:opacity .1s ease-in-out}.ngx-charts .arc:focus,.ngx-charts .bar:focus,.ngx-charts .card:focus,.ngx-charts .cell:focus{outline:0}.ngx-charts g:focus{outline:0}.ngx-charts .area-series.inactive,.ngx-charts .line-series-range.inactive,.ngx-charts .line-series.inactive,.ngx-charts .polar-series-area.inactive,.ngx-charts .polar-series-path.inactive{transition:opacity .1s ease-in-out;opacity:.2}.ngx-charts .line-highlight{display:none}.ngx-charts .line-highlight.active{display:block}.ngx-charts .area{opacity:.6}.ngx-charts .circle:hover{cursor:pointer}.ngx-charts .label{font-size:12px;font-weight:400}.ngx-charts .tooltip-anchor{fill:#000}.ngx-charts .gridline-path{stroke:#ddd;stroke-width:1;fill:none}.ngx-charts .refline-path{stroke:#a8b2c7;stroke-width:1;stroke-dasharray:5;stroke-dashoffset:5}.ngx-charts .refline-label{font-size:9px}.ngx-charts .reference-area{fill-opacity:.05;fill:#000}.ngx-charts .gridline-path-dotted{stroke:#ddd;stroke-width:1;fill:none;stroke-dasharray:1,20;stroke-dashoffset:3}.ngx-charts .grid-panel rect{fill:none}.ngx-charts .grid-panel.odd rect{fill:rgba(0,0,0,.05)}"],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush,
@@ -8409,6 +8682,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
     function SeriesVerticalComponent() {
         this.type = 'standard';
         this.tooltipDisabled = false;
+        this.tooltipCssClass = '';
         this.animations = true;
         this.showDataLabel = false;
         this.select = new EventEmitter();
@@ -8425,9 +8699,14 @@ var SeriesVerticalComponent = /** @class */ (function () {
         var _a;
         this.updateTooltipSettings();
         var width;
+        var widthPadding = 0;
         if (this.series.length) {
             width = this.xScale.bandwidth();
+            if (this.maxWidth) {
+                widthPadding = Math.round(Math.max(width - this.maxWidth, 0) / 2);
+            }
         }
+        width = width - widthPadding * 2;
         var yScaleMin = Math.max(this.yScale.domain()[0], 0);
         var d0 = (_a = {},
             _a[D0Types.positive] = 0,
@@ -8452,7 +8731,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 width: width,
                 formattedLabel: formattedLabel,
                 height: 0,
-                x: 0,
+                x: widthPadding,
                 y: 0,
             };
             if (_this.type === 'standard') {
@@ -8470,7 +8749,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                 var offset1 = offset0 + value;
                 d0[d0Type] += value;
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -8488,7 +8767,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
                     offset1 = 0;
                 }
                 bar.height = _this.yScale(offset0) - _this.yScale(offset1);
-                bar.x = 0;
+                bar.x = widthPadding;
                 bar.y = _this.yScale(offset1);
                 bar.offset0 = offset0;
                 bar.offset1 = offset1;
@@ -8601,6 +8880,10 @@ var SeriesVerticalComponent = /** @class */ (function () {
     ], SeriesVerticalComponent.prototype, "colors", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Number)
+    ], SeriesVerticalComponent.prototype, "maxWidth", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", Boolean)
     ], SeriesVerticalComponent.prototype, "gradient", void 0);
     __decorate([
@@ -8619,6 +8902,10 @@ var SeriesVerticalComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", typeof (_a = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _a : Object)
     ], SeriesVerticalComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], SeriesVerticalComponent.prototype, "tooltipCssClass", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Boolean)
@@ -8654,7 +8941,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
     SeriesVerticalComponent = __decorate([
         Component({
             selector: 'g[ngx-charts-series-vertical]',
-            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [ariaLabel]=\"bar.ariaLabel\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
+            template: "\n    <svg:g ngx-charts-bar\n      *ngFor=\"let bar of bars; trackBy: trackBy\"\n      [@animationState]=\"'active'\"\n      [@.disabled]=\"!animations\"\n      [width]=\"bar.width\"\n      [height]=\"bar.height\"\n      [x]=\"bar.x\"\n      [y]=\"bar.y + dims.yOffset\"\n      [fill]=\"bar.color\"\n      [stops]=\"bar.gradientStops\"\n      [data]=\"bar.data\"\n      [orientation]=\"'vertical'\"\n      [roundEdges]=\"bar.roundEdges\"\n      [gradient]=\"gradient\"\n      [ariaLabel]=\"bar.ariaLabel\"\n      [isActive]=\"isActive(bar.data)\"\n      (select)=\"onClick($event)\"\n      (activate)=\"activate.emit($event)\"\n      (deactivate)=\"deactivate.emit($event)\"\n      ngx-tooltip\n      [tooltipDisabled]=\"tooltipDisabled\"\n      [tooltipPlacement]=\"tooltipPlacement\"\n      [tooltipType]=\"tooltipType\"\n      [tooltipCssClass]=\"tooltipCssClass\"\n      [tooltipTitle]=\"tooltipTemplate ? undefined : bar.tooltipText\"\n      [tooltipTemplate]=\"tooltipTemplate\"\n      [tooltipContext]=\"bar.data\"\n      [animations]=\"animations\">\n    </svg:g>\n    <svg:g *ngIf=\"showDataLabel\">\n      <svg:g ngx-charts-bar-label *ngFor=\"let b of barsForDataLabels; let i = index; trackBy:trackDataLabelBy\"         \n        [barX]=\"b.x\"\n        [barY]=\"b.y\"\n        [barWidth]=\"b.width\"\n        [barHeight]=\"b.height\"\n        [value]=\"b.total\"\n        [valueFormatting]=\"dataLabelFormatting\"\n        [orientation]=\"'vertical'\"\n        (dimensionsChanged)=\"dataLabelHeightChanged.emit({size:$event, index:i})\"\n      />\n    </svg:g> \n  ",
             changeDetection: ChangeDetectionStrategy.OnPush,
             animations: [
                 trigger('animationState', [
@@ -9431,6 +9718,10 @@ var BubbleChartComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], BubbleChartComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], BubbleChartComponent.prototype, "margin", void 0);
     __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
@@ -10329,6 +10620,10 @@ var HeatMapComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_a = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _a : Object)
     ], HeatMapComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], HeatMapComponent.prototype, "margin", void 0);
     HeatMapComponent = __decorate([
         Component({
             selector: 'ngx-charts-heat-map',
@@ -10448,12 +10743,19 @@ var LineChartComponent = /** @class */ (function (_super) {
         _this.showGridLines = true;
         _this.curve = curveLinear;
         _this.activeEntries = [];
+        _this.enableSeriesHidding = false;
+        _this.hiddenEntries = [];
         _this.roundDomains = false;
         _this.tooltipDisabled = false;
         _this.showRefLines = false;
         _this.showRefLabels = true;
         _this.activate = new EventEmitter();
         _this.deactivate = new EventEmitter();
+        _this.showSeries = new EventEmitter();
+        _this.hideSeries = new EventEmitter();
+        _this.hoveredVerticalDone = new EventEmitter();
+        _this.tooltipCssClass = '';
+        _this.seriesTooltipCssClass = '';
         _this.margin = [10, 20, 10, 20];
         _this.xAxisHeight = 0;
         _this.yAxisWidth = 0;
@@ -10461,6 +10763,9 @@ var LineChartComponent = /** @class */ (function (_super) {
         _this.timelinePadding = 10;
         return _this;
     }
+    LineChartComponent.prototype.isHidden = function (entry) {
+        return isRelatedEntry(this.hiddenEntries, entry.name);
+    };
     LineChartComponent.prototype.update = function () {
         _super.prototype.update.call(this);
         this.dims = calculateViewDimensions({
@@ -10480,11 +10785,15 @@ var LineChartComponent = /** @class */ (function (_super) {
         if (this.timeline) {
             this.dims.height -= (this.timelineHeight + this.margin[2] + this.timelinePadding);
         }
+        if (!this.enableSeriesHidding && this.hiddenEntries.length > 0) {
+            this.hiddenEntries = [];
+        }
         this.xDomain = this.getXDomain();
         if (this.filteredDomain) {
             this.xDomain = this.filteredDomain;
         }
-        this.yDomain = this.getYDomain();
+        this.yDomain = this.getYDomain(true);
+        this.yDomainAll = this.getYDomain();
         this.seriesDomain = this.getSeriesDomain();
         this.xScale = this.getXScale(this.xDomain, this.dims.width);
         this.yScale = this.getYScale(this.yDomain, this.dims.height);
@@ -10505,7 +10814,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
     };
     LineChartComponent.prototype.getXDomain = function () {
-        var values = getUniqueXDomainValues(this.results);
+        var values = getUniqueXDomainValues(this.results, this.hiddenEntries);
         this.scaleType = getScaleType(values);
         var domain = [];
         if (this.scaleType === 'linear') {
@@ -10543,10 +10852,14 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
         return domain;
     };
-    LineChartComponent.prototype.getYDomain = function () {
+    LineChartComponent.prototype.getYDomain = function (excludeHidden) {
+        if (excludeHidden === void 0) { excludeHidden = false; }
         var domain = [];
         for (var _i = 0, _a = this.results; _i < _a.length; _i++) {
             var results = _a[_i];
+            if (excludeHidden && this.isHidden({ name: results.name })) {
+                continue;
+            }
             for (var _b = 0, _c = results.series; _b < _c.length; _b++) {
                 var d = _c[_b];
                 if (domain.indexOf(d.value) < 0) {
@@ -10617,13 +10930,39 @@ var LineChartComponent = /** @class */ (function (_super) {
     };
     LineChartComponent.prototype.updateHoveredVertical = function (item) {
         this.hoveredVertical = item.value;
+        this.hoveredVerticalDone.emit(item);
         this.deactivateAll();
     };
     LineChartComponent.prototype.hideCircles = function () {
         this.hoveredVertical = null;
+        this.hoveredVerticalDone.emit(null);
         this.deactivateAll();
     };
-    LineChartComponent.prototype.onClick = function (data, series) {
+    LineChartComponent.prototype.onLegendClick = function (data) {
+        this.select.emit(data);
+    };
+    LineChartComponent.prototype.onLegendToggle = function (data) {
+        if (this.enableSeriesHidding) {
+            this.toggleHidden(data);
+        }
+    };
+    LineChartComponent.prototype.toggleHidden = function (item) {
+        var idx = this.hiddenEntries.findIndex(function (d) {
+            return d.name === item.name;
+        });
+        if (idx > -1) {
+            this.hiddenEntries = this.hiddenEntries.slice(0, idx).concat(this.hiddenEntries.slice(idx + 1));
+            this.hideSeries.emit({ value: item, entries: this.hiddenEntries });
+            this.onActivate(item);
+        }
+        else {
+            this.onDeactivate(item);
+            this.hiddenEntries = [item].concat(this.hiddenEntries);
+            this.showSeries.emit({ value: item, entries: this.hiddenEntries });
+        }
+        this.update();
+    };
+    LineChartComponent.prototype.onSeriesClick = function (data, series) {
         if (series) {
             data.series = series.name;
         }
@@ -10638,7 +10977,7 @@ var LineChartComponent = /** @class */ (function (_super) {
             domain = this.seriesDomain;
         }
         else {
-            domain = this.yDomain;
+            domain = this.yDomainAll;
         }
         this.colors = new ColorHelper(this.scheme, this.schemeType, domain, this.customColors);
     };
@@ -10656,14 +10995,14 @@ var LineChartComponent = /** @class */ (function (_super) {
             opts.title = this.legendTitle;
         }
         else {
-            opts.domain = this.yDomain;
+            opts.domain = this.yDomainAll;
             opts.colors = this.colors.scale;
         }
         return opts;
     };
     LineChartComponent.prototype.updateYAxisWidth = function (_a) {
         var width = _a.width;
-        this.yAxisWidth = width;
+        this.yAxisWidth = this.definedYAxisWidth || width;
         this.update();
     };
     LineChartComponent.prototype.updateXAxisHeight = function (_a) {
@@ -10672,6 +11011,9 @@ var LineChartComponent = /** @class */ (function (_super) {
         this.update();
     };
     LineChartComponent.prototype.onActivate = function (item) {
+        if (this.isHidden(item)) {
+            return;
+        }
         this.deactivateAll();
         var idx = this.activeEntries.findIndex(function (d) {
             return d.name === item.name && d.value === item.value;
@@ -10683,6 +11025,9 @@ var LineChartComponent = /** @class */ (function (_super) {
         this.activate.emit({ value: item, entries: this.activeEntries });
     };
     LineChartComponent.prototype.onDeactivate = function (item) {
+        if (this.isHidden(item)) {
+            return;
+        }
         var idx = this.activeEntries.findIndex(function (d) {
             return d.name === item.name && d.value === item.value;
         });
@@ -10698,7 +11043,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
         this.activeEntries = [];
     };
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f, _g;
     __decorate([
         Input(),
         __metadata("design:type", Object)
@@ -10761,6 +11106,14 @@ var LineChartComponent = /** @class */ (function (_super) {
     ], LineChartComponent.prototype, "activeEntries", void 0);
     __decorate([
         Input(),
+        __metadata("design:type", Boolean)
+    ], LineChartComponent.prototype, "enableSeriesHidding", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], LineChartComponent.prototype, "hiddenEntries", void 0);
+    __decorate([
+        Input(),
         __metadata("design:type", String)
     ], LineChartComponent.prototype, "schemeType", void 0);
     __decorate([
@@ -10820,6 +11173,14 @@ var LineChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], LineChartComponent.prototype, "yScaleMax", void 0);
     __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LineChartComponent.prototype, "syncedHoveredVertical", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Number)
+    ], LineChartComponent.prototype, "definedYAxisWidth", void 0);
+    __decorate([
         Output(),
         __metadata("design:type", typeof (_a = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _a : Object)
     ], LineChartComponent.prototype, "activate", void 0);
@@ -10828,13 +11189,37 @@ var LineChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", typeof (_b = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _b : Object)
     ], LineChartComponent.prototype, "deactivate", void 0);
     __decorate([
+        Output(),
+        __metadata("design:type", typeof (_c = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _c : Object)
+    ], LineChartComponent.prototype, "showSeries", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", typeof (_d = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _d : Object)
+    ], LineChartComponent.prototype, "hideSeries", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", typeof (_e = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _e : Object)
+    ], LineChartComponent.prototype, "hoveredVerticalDone", void 0);
+    __decorate([
         ContentChild('tooltipTemplate'),
-        __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
+        __metadata("design:type", typeof (_f = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _f : Object)
     ], LineChartComponent.prototype, "tooltipTemplate", void 0);
     __decorate([
         ContentChild('seriesTooltipTemplate'),
-        __metadata("design:type", typeof (_d = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _d : Object)
+        __metadata("design:type", typeof (_g = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _g : Object)
     ], LineChartComponent.prototype, "seriesTooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], LineChartComponent.prototype, "tooltipCssClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], LineChartComponent.prototype, "seriesTooltipCssClass", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], LineChartComponent.prototype, "margin", void 0);
     __decorate([
         HostListener('mouseleave'),
         __metadata("design:type", Function),
@@ -10844,7 +11229,7 @@ var LineChartComponent = /** @class */ (function (_super) {
     LineChartComponent = __decorate([
         Component({
             selector: 'ngx-charts-line-chart',
-            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onClick($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\">\n      <svg:defs>\n        <svg:clipPath [attr.id]=\"clipPathId\">\n          <svg:rect\n            [attr.width]=\"dims.width + 10\"\n            [attr.height]=\"dims.height + 10\"\n            [attr.transform]=\"'translate(-5, -5)'\"/>\n        </svg:clipPath>\n      </svg:defs>\n      <svg:g [attr.transform]=\"transform\" class=\"line-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          [referenceLines]=\"referenceLines\"\n          [showRefLines]=\"showRefLines\"\n          [showRefLabels]=\"showRefLabels\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g [attr.clip-path]=\"clipPath\">\n          <svg:g *ngFor=\"let series of results; trackBy:trackBy\" [@animationState]=\"'active'\">\n            <svg:g ngx-charts-line-series\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [colors]=\"colors\"\n              [data]=\"series\"\n              [activeEntries]=\"activeEntries\"\n              [scaleType]=\"scaleType\"\n              [curve]=\"curve\"\n              [rangeFillOpacity]=\"rangeFillOpacity\"\n              [hasRange]=\"hasRange\"\n              [animations]=\"animations\"\n            />\n          </svg:g>\n\n          <svg:g *ngIf=\"!tooltipDisabled\" (mouseleave)=\"hideCircles()\">\n            <svg:g ngx-charts-tooltip-area\n              [dims]=\"dims\"\n              [xSet]=\"xSet\"\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [results]=\"results\"\n              [colors]=\"colors\"\n              [tooltipDisabled]=\"tooltipDisabled\"\n              [tooltipTemplate]=\"seriesTooltipTemplate\"\n              (hover)=\"updateHoveredVertical($event)\"\n            />\n\n            <svg:g *ngFor=\"let series of results\">\n              <svg:g ngx-charts-circle-series\n                [xScale]=\"xScale\"\n                [yScale]=\"yScale\"\n                [colors]=\"colors\"\n                [data]=\"series\"\n                [scaleType]=\"scaleType\"\n                [visibleValue]=\"hoveredVertical\"\n                [activeEntries]=\"activeEntries\"\n                [tooltipDisabled]=\"tooltipDisabled\"\n                [tooltipTemplate]=\"tooltipTemplate\"\n                (select)=\"onClick($event, series)\"\n                (activate)=\"onActivate($event)\"\n                (deactivate)=\"onDeactivate($event)\"\n              />\n            </svg:g>\n          </svg:g>\n        </svg:g>\n      </svg:g>\n      <svg:g ngx-charts-timeline\n        *ngIf=\"timeline && scaleType != 'ordinal'\"\n        [attr.transform]=\"timelineTransform\"\n        [results]=\"results\"\n        [view]=\"[timelineWidth, height]\"\n        [height]=\"timelineHeight\"\n        [scheme]=\"scheme\"\n        [customColors]=\"customColors\"\n        [scaleType]=\"scaleType\"\n        [legend]=\"legend\"\n        (onDomainChange)=\"updateDomain($event)\">\n        <svg:g *ngFor=\"let series of results; trackBy:trackBy\">\n          <svg:g ngx-charts-line-series\n            [xScale]=\"timelineXScale\"\n            [yScale]=\"timelineYScale\"\n            [colors]=\"colors\"\n            [data]=\"series\"\n            [scaleType]=\"scaleType\"\n            [curve]=\"curve\"\n            [hasRange]=\"hasRange\"\n            [animations]=\"animations\"\n          />\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
+            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [activeEntries]=\"activeEntries\"\n      [hiddenEntries]=\"hiddenEntries\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onLegendClick($event)\"\n      (legendLabelToggle)=\"onLegendToggle($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\">\n      <svg:defs>\n        <svg:clipPath [attr.id]=\"clipPathId\">\n          <svg:rect\n            [attr.width]=\"dims.width + 10\"\n            [attr.height]=\"dims.height + 10\"\n            [attr.transform]=\"'translate(-5, -5)'\"/>\n        </svg:clipPath>\n      </svg:defs>\n      <svg:g [attr.transform]=\"transform\" class=\"line-chart chart\">\n        <svg:g ngx-charts-x-axis\n          *ngIf=\"xAxis\"\n          [xScale]=\"xScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showXAxisLabel\"\n          [labelText]=\"xAxisLabel\"\n          [tickFormatting]=\"xAxisTickFormatting\"\n          [ticks]=\"xAxisTicks\"\n          (dimensionsChanged)=\"updateXAxisHeight($event)\">\n        </svg:g>\n        <svg:g ngx-charts-y-axis\n          *ngIf=\"yAxis\"\n          [yScale]=\"yScale\"\n          [dims]=\"dims\"\n          [showGridLines]=\"showGridLines\"\n          [showLabel]=\"showYAxisLabel\"\n          [labelText]=\"yAxisLabel\"\n          [tickFormatting]=\"yAxisTickFormatting\"\n          [ticks]=\"yAxisTicks\"\n          [referenceLines]=\"referenceLines\"\n          [showRefLines]=\"showRefLines\"\n          [showRefLabels]=\"showRefLabels\"\n          (dimensionsChanged)=\"updateYAxisWidth($event)\">\n        </svg:g>\n        <svg:g [attr.clip-path]=\"clipPath\">\n          <svg:g *ngFor=\"let series of results; trackBy:trackBy\" [@animationState]=\"'active'\">\n            <svg:g *ngIf=\"!isHidden(series)\">\n              <svg:g ngx-charts-line-series\n                [xScale]=\"xScale\"\n                [yScale]=\"yScale\"\n                [colors]=\"colors\"\n                [data]=\"series\"\n                [activeEntries]=\"activeEntries\"\n                [scaleType]=\"scaleType\"\n                [curve]=\"curve\"\n                [rangeFillOpacity]=\"rangeFillOpacity\"\n                [hasRange]=\"hasRange\"\n                [animations]=\"animations\"\n              />\n            </svg:g>\n          </svg:g>\n          <svg:g *ngIf=\"!tooltipDisabled\" (mouseleave)=\"hideCircles()\">\n            <svg:g ngx-charts-tooltip-area\n              [dims]=\"dims\"\n              [xSet]=\"xSet\"\n              [xScale]=\"xScale\"\n              [yScale]=\"yScale\"\n              [results]=\"results\"\n              [colors]=\"colors\"\n              [hiddenEntries]=\"hiddenEntries\"\n              [tooltipDisabled]=\"tooltipDisabled\"\n              [tooltipTemplate]=\"seriesTooltipTemplate\"\n              [tooltipCssClass]=\"seriesTooltipCssClass\"\n              [syncedHoveredVertical]=\"syncedHoveredVertical\"\n              (hover)=\"updateHoveredVertical($event)\"\n            />\n\n            <svg:g *ngFor=\"let series of results\">\n              <svg:g *ngIf=\"!isHidden(series)\">\n                <svg:g ngx-charts-circle-series\n                  [xScale]=\"xScale\"\n                  [yScale]=\"yScale\"\n                  [colors]=\"colors\"\n                  [data]=\"series\"\n                  [scaleType]=\"scaleType\"\n                  [visibleValue]=\"hoveredVertical\"\n                  [activeEntries]=\"activeEntries\"\n                  [tooltipDisabled]=\"tooltipDisabled\"\n                  [tooltipTemplate]=\"tooltipTemplate\"\n                  [tooltipCssClass]=\"tooltipCssClass\"\n                  (select)=\"onSeriesClick($event, series)\"\n                  (activate)=\"onActivate($event)\"\n                  (deactivate)=\"onDeactivate($event)\"\n                />\n              </svg:g>\n            </svg:g>\n          </svg:g>\n        </svg:g>\n      </svg:g>\n      <svg:g ngx-charts-timeline\n        *ngIf=\"timeline && scaleType != 'ordinal'\"\n        [attr.transform]=\"timelineTransform\"\n        [results]=\"results\"\n        [view]=\"[timelineWidth, height]\"\n        [height]=\"timelineHeight\"\n        [scheme]=\"scheme\"\n        [customColors]=\"customColors\"\n        [scaleType]=\"scaleType\"\n        [hiddenEntries]=\"hiddenEntries\"\n        [legend]=\"legend\"\n        (onDomainChange)=\"updateDomain($event)\">\n        <svg:g *ngFor=\"let series of results; trackBy:trackBy\">\n          <svg:g *ngIf=\"!isHidden(series)\">\n            <svg:g ngx-charts-line-series\n              [xScale]=\"timelineXScale\"\n              [yScale]=\"timelineYScale\"\n              [colors]=\"colors\"\n              [data]=\"series\"\n              [scaleType]=\"scaleType\"\n              [curve]=\"curve\"\n              [hasRange]=\"hasRange\"\n              [animations]=\"animations\"\n            />\n          </svg:g>\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
             styles: [".ngx-charts{float:left;overflow:visible}.ngx-charts .arc,.ngx-charts .bar,.ngx-charts .circle{cursor:pointer}.ngx-charts .arc.active,.ngx-charts .arc:hover,.ngx-charts .bar.active,.ngx-charts .bar:hover,.ngx-charts .card.active,.ngx-charts .card:hover,.ngx-charts .cell.active,.ngx-charts .cell:hover{opacity:.8;transition:opacity .1s ease-in-out}.ngx-charts .arc:focus,.ngx-charts .bar:focus,.ngx-charts .card:focus,.ngx-charts .cell:focus{outline:0}.ngx-charts g:focus{outline:0}.ngx-charts .area-series.inactive,.ngx-charts .line-series-range.inactive,.ngx-charts .line-series.inactive,.ngx-charts .polar-series-area.inactive,.ngx-charts .polar-series-path.inactive{transition:opacity .1s ease-in-out;opacity:.2}.ngx-charts .line-highlight{display:none}.ngx-charts .line-highlight.active{display:block}.ngx-charts .area{opacity:.6}.ngx-charts .circle:hover{cursor:pointer}.ngx-charts .label{font-size:12px;font-weight:400}.ngx-charts .tooltip-anchor{fill:#000}.ngx-charts .gridline-path{stroke:#ddd;stroke-width:1;fill:none}.ngx-charts .refline-path{stroke:#a8b2c7;stroke-width:1;stroke-dasharray:5;stroke-dashoffset:5}.ngx-charts .refline-label{font-size:9px}.ngx-charts .reference-area{fill-opacity:.05;fill:#000}.ngx-charts .gridline-path-dotted{stroke:#ddd;stroke-width:1;fill:none;stroke-dasharray:1,20;stroke-dashoffset:3}.ngx-charts .grid-panel rect{fill:none}.ngx-charts .grid-panel.odd rect{fill:rgba(0,0,0,.05)}"],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11452,6 +11837,10 @@ var PolarChartComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], PolarChartComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], PolarChartComponent.prototype, "margin", void 0);
     PolarChartComponent = __decorate([
         Component({
             selector: 'ngx-charts-polar-chart',
@@ -11738,6 +12127,10 @@ var AdvancedPieChartComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], AdvancedPieChartComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], AdvancedPieChartComponent.prototype, "margin", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Function)
@@ -12259,6 +12652,10 @@ var PieChartComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
     ], PieChartComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], PieChartComponent.prototype, "margin", void 0);
     PieChartComponent = __decorate([
         Component({
             selector: 'ngx-charts-pie-chart',
@@ -12438,6 +12835,10 @@ var PieGridComponent = /** @class */ (function (_super) {
         Input(),
         __metadata("design:type", Number)
     ], PieGridComponent.prototype, "minWidth", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], PieGridComponent.prototype, "margin", void 0);
     __decorate([
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_a = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _a : Object)
@@ -13178,6 +13579,10 @@ var NumberCardComponent = /** @class */ (function (_super) {
         Input(),
         __metadata("design:type", Number)
     ], NumberCardComponent.prototype, "designatedTotal", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], NumberCardComponent.prototype, "margin", void 0);
     NumberCardComponent = __decorate([
         Component({
             selector: 'ngx-charts-number-card',
@@ -13544,6 +13949,10 @@ var TreeMapComponent = /** @class */ (function (_super) {
         ContentChild('tooltipTemplate'),
         __metadata("design:type", typeof (_a = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _a : Object)
     ], TreeMapComponent.prototype, "tooltipTemplate", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], TreeMapComponent.prototype, "margin", void 0);
     TreeMapComponent = __decorate([
         Component({
             selector: 'ngx-charts-tree-map',
@@ -13722,6 +14131,10 @@ var LinearGaugeComponent = /** @class */ (function (_super) {
         ViewChild('unitsTextEl'),
         __metadata("design:type", typeof (_b = typeof ElementRef !== "undefined" && ElementRef) === "function" ? _b : Object)
     ], LinearGaugeComponent.prototype, "unitsTextEl", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Array)
+    ], LinearGaugeComponent.prototype, "margin", void 0);
     LinearGaugeComponent = __decorate([
         Component({
             selector: 'ngx-charts-linear-gauge',
@@ -14312,4 +14725,4 @@ function tickFormat(fieldType, groupByType) {
     };
 }
 
-export { NgxChartsModule, ChartCommonModule, LegendComponent, ScaleLegendComponent, LegendEntryComponent, AdvancedLegendComponent, TooltipModule, TooltipService, TooltipContentComponent, TooltipDirective, StyleTypes, AlignmentTypes, ShowTypes, AxesModule, AxisLabelComponent, XAxisComponent, XAxisTicksComponent, YAxisComponent, YAxisTicksComponent, reduceTicks, CountUpDirective, count, decimalChecker, Timeline, ColorHelper, ChartComponent, AreaComponent, BaseChartComponent, CircleComponent, CircleSeriesComponent, gridSize, gridLayout, GridPanelComponent, GridPanelSeriesComponent, SvgLinearGradientComponent, SvgRadialGradientComponent, TooltipArea, tickFormat, trimLabel, calculateViewDimensions, formatLabel, getUniqueXDomainValues, getScaleType, AreaChartModule, AreaChartComponent, AreaChartNormalizedComponent, AreaChartStackedComponent, AreaSeriesComponent, BarChartModule, BarComponent, BarHorizontalComponent, BarHorizontal2DComponent, BarHorizontalNormalizedComponent, BarHorizontalStackedComponent, SeriesHorizontal, BarLabelComponent, BarVerticalComponent, BarVertical2DComponent, BarVerticalNormalizedComponent, BarVerticalStackedComponent, D0Types, SeriesVerticalComponent, BubbleChartModule, BubbleChartComponent, getDomain, getScale, BubbleSeriesComponent, ForceDirectedGraphModule, ForceDirectedGraphComponent, HeatMapModule, HeatMapComponent, HeatMapCellComponent, HeatCellSeriesComponent, LineChartModule, LineChartComponent, LineComponent, LineSeriesComponent, PolarChartModule, PolarChartComponent, PolarSeriesComponent, NumberCardModule, NumberCardComponent, CardComponent, CardSeriesComponent, PieChartModule, AdvancedPieChartComponent, PieChartComponent, PieArcComponent, PieGridComponent, PieSeriesComponent, PieLabelComponent, TreeMapModule, TreeMapComponent, TreeMapCellComponent, TreeMapCellSeriesComponent, GaugeModule, GaugeArcComponent, GaugeAxisComponent, GaugeComponent, LinearGaugeComponent };
+export { NgxChartsModule, ChartCommonModule, LegendComponent, ScaleLegendComponent, LegendEntryComponent, AdvancedLegendComponent, TooltipModule, TooltipService, TooltipContentComponent, TooltipDirective, StyleTypes, AlignmentTypes, ShowTypes, AxesModule, AxisLabelComponent, XAxisComponent, XAxisTicksComponent, YAxisComponent, YAxisTicksComponent, reduceTicks, CountUpDirective, count, decimalChecker, Timeline, ColorHelper, ChartComponent, AreaComponent, BaseChartComponent, CircleComponent, CircleSeriesComponent, gridSize, gridLayout, GridPanelComponent, GridPanelSeriesComponent, SvgLinearGradientComponent, SvgRadialGradientComponent, TooltipArea, tickFormat, trimLabel, calculateViewDimensions, formatLabel, isRelatedEntry, getUniqueXDomainValues, getScaleType, AreaChartModule, AreaChartComponent, AreaChartNormalizedComponent, AreaChartStackedComponent, AreaSeriesComponent, BarChartModule, BarComponent, BarHorizontalComponent, BarHorizontal2DComponent, BarHorizontalNormalizedComponent, BarHorizontalStackedComponent, SeriesHorizontal, BarLabelComponent, BarVerticalComponent, BarVertical2DComponent, BarVerticalNormalizedComponent, BarVerticalStackedComponent, D0Types, SeriesVerticalComponent, BubbleChartModule, BubbleChartComponent, getDomain, getScale, BubbleSeriesComponent, ForceDirectedGraphModule, ForceDirectedGraphComponent, HeatMapModule, HeatMapComponent, HeatMapCellComponent, HeatCellSeriesComponent, LineChartModule, LineChartComponent, LineComponent, LineSeriesComponent, PolarChartModule, PolarChartComponent, PolarSeriesComponent, NumberCardModule, NumberCardComponent, CardComponent, CardSeriesComponent, PieChartModule, AdvancedPieChartComponent, PieChartComponent, PieArcComponent, PieGridComponent, PieSeriesComponent, PieLabelComponent, TreeMapModule, TreeMapComponent, TreeMapCellComponent, TreeMapCellSeriesComponent, GaugeModule, GaugeArcComponent, GaugeAxisComponent, GaugeComponent, LinearGaugeComponent };

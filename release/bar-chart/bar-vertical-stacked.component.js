@@ -33,6 +33,7 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         _this.legend = false;
         _this.legendTitle = 'Legend';
         _this.legendPosition = 'right';
+        _this.xAxisPositionReversed = false;
         _this.tooltipDisabled = false;
         _this.tooltipCssClass = '';
         _this.xShowGridLines = false;
@@ -68,7 +69,8 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
             showYLabel: this.showYAxisLabel,
             showLegend: this.legend,
             legendType: this.schemeType,
-            legendPosition: this.legendPosition
+            legendPosition: this.legendPosition,
+            xAxisPositionReversed: this.xAxisPositionReversed,
         });
         if (this.showDataLabel) {
             this.dims.height -= this.dataLabelMaxHeight.negative;

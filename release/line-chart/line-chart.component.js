@@ -28,7 +28,7 @@ import { calculateViewDimensions } from '../common/view-dimensions.helper';
 import { ColorHelper } from '../common/color.helper';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { id } from '../utils/id';
-import { getUniqueXDomainValues, getScaleType } from '../common/domain.helper';
+import { getUniqueXDomainValues, getScaleType, isRelatedEntry } from '../common/domain.helper';
 var LineChartComponent = /** @class */ (function (_super) {
     __extends(LineChartComponent, _super);
     function LineChartComponent() {
@@ -109,7 +109,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         }
     };
     LineChartComponent.prototype.getXDomain = function () {
-        var values = getUniqueXDomainValues(this.results);
+        var values = getUniqueXDomainValues(this.results, this.hiddenEntries);
         this.scaleType = getScaleType(values);
         var domain = [];
         if (this.scaleType === 'linear') {
